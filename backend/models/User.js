@@ -1,33 +1,55 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  // store hashed password (hashing performed elsewhere)
-  password: { type: String, required: true },
-  // role: volunteer or NGO
-  role: { type: String, enum: ['volunteer', 'ngo'], required: true },
-  skills: [{ type: String, trim: true }],
-  bio: { type: String, trim: true },
-  // GeoJSON Point: { type: 'Point', coordinates: [lng, lat] }
-  location: {
-    type: {
-      type: String,
-      enum: ['Point'],
-      default: 'Point'
+    name: {
+        type: String,
+        required: true,
+        trim: true
     },
-    coordinates: {
-      type: [Number],
-      default: [0, 0]
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    // role: volunteer or NGO
+    role: {
+        type: String,
+        enum: ['volunteer', 'ngo'],
+        required: true
+    },
+    skills: [{
+        type: String,
+        trim: true
+    }],
+    bio: {
+        type: String,
+        trim: true
+    },
+    // GeoJSON Point: { type: 'Point', coordinates: [lng, lat] }
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number],
+            default: [0, 0]
+        }
     }
-  }
 }, { timestamps: true });
 
 // remove sensitive fields when converting to JSON
-UserSchema.methods.toJSON = function() {
-  const obj = this.toObject();
-  delete obj.password;
-  return obj;
+UserSchema.methods.toJSON = function () {
+    const obj = this.toObject();
+    delete obj.password;
+    return obj;
 };
 
 // add 2dsphere index for geospatial queries on `location`
