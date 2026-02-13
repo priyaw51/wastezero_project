@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 
@@ -12,6 +13,7 @@ const Profile = () => {
         location: { coordinates: [0, 0] },
         skills: [],
         bio: "",
+        address: "",
     });
 
     const [passwordData, setPasswordData] = useState({
@@ -29,6 +31,7 @@ const Profile = () => {
             location: storedUser.location || { coordinates: [0, 0] },
             skills: storedUser.skills || [],
             bio: storedUser.bio || "",
+            address: storedUser.address || "",
         });
     }, []);
 
@@ -47,20 +50,67 @@ const Profile = () => {
         setPasswordData({ ...passwordData, [name]: value });
     };
 
-    const handleSaveProfile = (e) => {
+    const handleSaveProfile = async (e) => {
         e.preventDefault();
-        // Logic to update profile would go here (API call)
-        alert("Profile update functionality to be implemented.");
+        try {
+            const token = localStorage.getItem("token");
+            if (!user || !user._id) return;
+
+            // Only send fields that are editable
+            const updateData = {
+                bio: formData.bio,
+                address: formData.address,
+                skills: formData.skills,
+            };
+
+            const response = await axios.put(
+                `http://localhost:3000/api/users/${user._id}`,
+                updateData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Update local storage and state
+            const updatedUser = { ...user, ...response.data };
+            setUser(updatedUser);
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+
+            alert("Profile updated successfully!");
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("Failed to update profile: " + (error.response?.data?.message || "An error occurred"));
+        }
     };
 
-    const handleSavePassword = (e) => {
+    const handleSavePassword = async (e) => {
         e.preventDefault();
-        if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert("New passwords do not match!");
-            return;
+        try {
+            if (passwordData.newPassword !== passwordData.confirmPassword) {
+                alert("New passwords do not match!");
+                return;
+            }
+
+            const token = localStorage.getItem("token");
+            if (!user || !user._id) return;
+
+            const response = await axios.put(
+                `http://localhost:3000/api/users/${user._id}/password`,
+                {
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            alert("Password updated successfully!");
+            setPasswordData({
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
+        } catch (error) {
+            console.error("Error changing password:", error);
+            alert("Failed to change password: " + (error.response?.data?.message || "An error occurred"));
         }
-        // Logic to update password would go here (API call)
-        alert("Password update functionality to be implemented.");
     };
 
     if (!user) {
@@ -119,9 +169,8 @@ const Profile = () => {
                                                 type="text"
                                                 name="name"
                                                 value={formData.name}
-                                                onChange={handleProfileChange}
-                                                className={`w-full p-3 rounded-lg border focus:ring-2 focus:ring-green-500 outline-none transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'}`}
-                                                placeholder="Your Full Name"
+                                                readOnly
+                                                className={`w-full p-3 rounded-lg border outline-none cursor-not-allowed ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-500'}`}
                                             />
                                         </div>
 
@@ -135,6 +184,37 @@ const Profile = () => {
                                                 className={`w-full p-3 rounded-lg border outline-none cursor-not-allowed ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-500'}`}
                                             />
                                             <p className="text-xs text-gray-500 mt-1">This is the email address used for account notifications.</p>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Address</label>
+                                            <input
+                                                type="text"
+                                                name="address"
+                                                value={formData.address}
+                                                onChange={handleProfileChange}
+                                                className={`w-full p-3 rounded-lg border focus:ring-2 focus:ring-green-500 outline-none transition-all ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'}`}
+                                                placeholder="Your Full Address"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Location Coordinates</label>
+                                            <div className="flex gap-3">
+                                                <input
+                                                    type="text"
+                                                    value={`Lat: ${formData.location?.coordinates?.[1] || 0}`}
+                                                    readOnly
+                                                    className={`flex-1 p-3 rounded-lg border outline-none cursor-not-allowed ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-500'}`}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={`Lng: ${formData.location?.coordinates?.[0] || 0}`}
+                                                    readOnly
+                                                    className={`flex-1 p-3 rounded-lg border outline-none cursor-not-allowed ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-500'}`}
+                                                />
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-1">This helps match you with nearby opportunities.</p>
                                         </div>
 
                                         <div>

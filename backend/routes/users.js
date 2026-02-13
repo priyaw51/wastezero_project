@@ -6,5 +6,6 @@ const auth = require('../middlewares/auth');
 router.get('/:id', userController.getProfile);
 // protect update route
 router.put('/:id', auth, userController.updateProfile);
+router.put('/:id/password', auth, userController.changePassword);
 
 module.exports = router;

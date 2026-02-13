@@ -11,6 +11,8 @@ function Login() {
     email: "",
     password: "",
   });
+  const [otp, setOtp] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,16 +20,32 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3000/api/auth/login", formData);
 
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      localStorage.setItem("token", response.data.token);
-      alert("Login Successful!");
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Login Failed: " + (error.response?.data?.message || "Invalid credentials"));
+    if (showOtpInput) {
+      // Verify OTP logic
+      try {
+        const response = await axios.post("http://localhost:3000/api/auth/verify-otp", {
+          email: formData.email,
+          otp: otp
+        });
+        alert("Login Successful!");
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("token", response.data.token);
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("Verification Error:", error);
+        alert("Verification Failed: " + (error.response?.data?.message || "Invalid OTP"));
+      }
+    } else {
+      // Login and Send OTP
+      try {
+        const response = await axios.post("http://localhost:3000/api/auth/login", formData);
+        alert(response.data.message);
+        setShowOtpInput(true);
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Login Failed: " + (error.response?.data?.message || "Invalid credentials"));
+      }
     }
   };
 
@@ -37,33 +55,51 @@ function Login() {
         <h2>WasteZero Login</h2>
 
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          {!showOtpInput ? (
+            <>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
 
-          <div className="password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Enter Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-            <span
-              onClick={() => setShowPassword(!showPassword)}
-              className="password-toggle"
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="password-toggle"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="full-width">
+              <label style={{ display: "block", marginBottom: "5px", color: "green", fontWeight: "bold" }}>
+                OTP Sent to email! Enter code below:
+              </label>
+              <input
+                type="text"
+                name="otp"
+                placeholder="Enter 6-digit OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
-          <button type="submit">Login</button>
+          <button type="submit">{showOtpInput ? "Verify OTP" : "Login"}</button>
         </form>
 
         <p className="toggle">

@@ -16,7 +16,10 @@ function Register() {
     bio: "",
     latitude: "",
     longitude: "",
+    address: "",
   });
+  const [otp, setOtp] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,28 +35,47 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const submissionData = {
-      ...formData,
-      skills: formData.skills.split(",").map((s) => s.trim()).filter(Boolean),
-      location: {
-        type: "Point",
-        coordinates: [
-          parseFloat(formData.longitude) || 0,
-          parseFloat(formData.latitude) || 0,
-        ],
-      },
-    };
-    delete submissionData.latitude;
-    delete submissionData.longitude;
 
-    try {
-      const response = await axios.post("http://localhost:3000/api/auth/register", submissionData);
+    if (showOtpInput) {
+      // Verify OTP logic
+      try {
+        const response = await axios.post("http://localhost:3000/api/auth/verify-otp", {
+          email: formData.email,
+          otp: otp
+        });
+        alert("Verification Successful! You are now logged in.");
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("token", response.data.token);
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("Verification Error:", error);
+        alert("Verification Failed: " + (error.response?.data?.message || "Invalid OTP"));
+      }
+    } else {
+      // Register and Send OTP logic
+      const submissionData = {
+        ...formData,
+        skills: formData.skills.split(",").map((s) => s.trim()).filter(Boolean),
+        location: {
+          type: "Point",
+          coordinates: [
+            parseFloat(formData.longitude) || 0,
+            parseFloat(formData.latitude) || 0,
+          ],
+        },
+      };
+      delete submissionData.latitude;
+      delete submissionData.longitude;
 
-      alert("Registration Successful!");
-      navigate("/"); // Redirect to login
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Registration Failed: " + (error.response?.data?.message || "An error occurred during registration."));
+      try {
+        // Temporarily use register endpoint which now sends OTP
+        const response = await axios.post("http://localhost:3000/api/auth/register", submissionData);
+        alert(response.data.message);
+        setShowOtpInput(true);
+      } catch (error) {
+        console.error("Registration Error:", error);
+        alert("Registration Failed: " + (error.response?.data?.message || "An error occurred during registration."));
+      }
     }
   };
 
@@ -138,6 +160,17 @@ function Register() {
             />
           </div>
 
+          <div className="full-width">
+            <input
+              type="text"
+              name="address"
+              placeholder="Full Address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
           <div
             className="full-width"
             style={{ display: "flex", gap: "10px" }}
@@ -162,8 +195,24 @@ function Register() {
             />
           </div>
 
+          {showOtpInput && (
+            <div className="full-width">
+              <label style={{ display: "block", marginBottom: "5px", color: "green", fontWeight: "bold" }}>
+                OTP Sent to email! Enter code below:
+              </label>
+              <input
+                type="text"
+                name="otp"
+                placeholder="Enter 6-digit OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+              />
+            </div>
+          )}
+
           <button type="submit" className="full-width">
-            Register
+            {showOtpInput ? "Verify & Register" : "Register"}
           </button>
         </form>
 
