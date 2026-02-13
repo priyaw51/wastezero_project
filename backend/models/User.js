@@ -17,10 +17,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // role: volunteer or NGO
+    // role: volunteer, ngo, admin
     role: {
         type: String,
-        enum: ['volunteer', 'ngo'],
+        enum: ['volunteer', 'ngo', 'admin'],
         required: true
     },
     skills: [{

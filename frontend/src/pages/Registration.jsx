@@ -1,29 +1,68 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
- 
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import MapPicker from "../components/MapPicker";
+
 function Register() {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "user",
+    role: "",
+    skills: "",
+    bio: "",
+    latitude: "",
+    longitude: "",
   });
- 
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
- 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Registration Successful\n" + JSON.stringify(formData, null, 2));
+
+  const handleLocationSelect = (lat, lng) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitude: lat.toFixed(6),
+      longitude: lng.toFixed(6),
+    }));
   };
- 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const submissionData = {
+      ...formData,
+      skills: formData.skills.split(",").map((s) => s.trim()).filter(Boolean),
+      location: {
+        type: "Point",
+        coordinates: [
+          parseFloat(formData.longitude) || 0,
+          parseFloat(formData.latitude) || 0,
+        ],
+      },
+    };
+    delete submissionData.latitude;
+    delete submissionData.longitude;
+
+    try {
+      const response = await axios.post("http://localhost:3000/api/auth/register", submissionData);
+
+      alert("Registration Successful!");
+      navigate("/"); // Redirect to login
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Registration Failed: " + (error.response?.data?.message || "An error occurred during registration."));
+    }
+  };
+
   return (
-    <div className="container">
-      <div className="form-box">
+    <div className="auth-container">
+      <div className="form-box register-box">
         <h2>WasteZero Registration</h2>
- 
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit} className="register-form">
           <input
             type="text"
             name="name"
@@ -32,7 +71,7 @@ function Register() {
             onChange={handleChange}
             required
           />
- 
+
           <input
             type="email"
             name="email"
@@ -41,29 +80,93 @@ function Register() {
             onChange={handleChange}
             required
           />
- 
-          <input
-            type="password"
-            name="password"
-            placeholder="Enter Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
- 
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <option value="user">User</option>
-            <option value="agent">Pickup Agent</option>
+
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Enter Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="password-toggle"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+
+          <select name="role" value={formData.role} onChange={handleChange}>
+            <option value="">Select Role</option>
+            <option value="volunteer">Volunteer</option>
+            <option value="ngo">NGO</option>
             <option value="admin">Admin</option>
           </select>
- 
-          <button type="submit">Register</button>
+
+          <input
+            type="text"
+            name="skills"
+            placeholder="Skills (comma separated)"
+            value={formData.skills}
+            onChange={handleChange}
+          />
+
+          <textarea
+            name="bio"
+            placeholder="Short Bio"
+            value={formData.bio}
+            onChange={handleChange}
+            rows="2"
+            style={{
+              padding: "8px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
+              width: "100%",
+            }}
+          ></textarea>
+
+          <div className="full-width">
+            <label style={{ display: "block", marginBottom: "5px" }}>
+              Select Location on Map:
+            </label>
+            <MapPicker
+              onLocationSelect={handleLocationSelect}
+              initialLat={formData.latitude}
+              initialLng={formData.longitude}
+            />
+          </div>
+
+          <div
+            className="full-width"
+            style={{ display: "flex", gap: "10px" }}
+          >
+            <input
+              type="number"
+              name="latitude"
+              placeholder="Latitude"
+              value={formData.latitude}
+              onChange={handleChange}
+              step="any"
+              style={{ flex: 1 }}
+            />
+            <input
+              type="number"
+              name="longitude"
+              placeholder="Longitude"
+              value={formData.longitude}
+              onChange={handleChange}
+              step="any"
+              style={{ flex: 1 }}
+            />
+          </div>
+
+          <button type="submit" className="full-width">
+            Register
+          </button>
         </form>
- 
+
         <p className="toggle">
           Already have an account? <Link to="/">Login</Link>
         </p>
@@ -71,5 +174,5 @@ function Register() {
     </div>
   );
 }
- 
+
 export default Register

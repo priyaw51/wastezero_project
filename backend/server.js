@@ -10,6 +10,7 @@ async function start() {
   const app = express();
   const port = process.env.PORT || 3000;
 
+  app.use(require('cors')());
   app.use(express.json());
   // mount routes
   app.use('/api/auth', require('./routes/auth'));

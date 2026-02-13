@@ -1,41 +1,95 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #2ecc71, #27ae60);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  min-height: 100vh;
 }
- 
-.container {
+
+/* Layout for Login and Registration pages */
+.auth-container {
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #2ecc71, #27ae60);
+  padding: 20px;
+  box-sizing: border-box;
 }
- 
+
 .form-box {
   background: white;
-  padding: 30px;
+  padding: 15px;
   border-radius: 10px;
   width: 350px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
- 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
- 
-input, select {
+
+/* Generic input styles for all forms in form-box (Login, etc.) */
+.form-box input {
   width: 100%;
   padding: 10px;
-  margin: 8px 0;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Specific styles for Registration page to allow wider layout */
+.register-box {
+  width: 800px;
+  max-width: 95%;
+}
+
+.register-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Make inputs fill their grid cells */
+.register-form input,
+.register-form select,
+.register-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 0;
   border-radius: 5px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
- 
-button {
+
+/* Utility to span full width in grid */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* Adjust top position for register form because input height might differ slightly or padding */
+.register-form .password-toggle {
+  top: 50%;
+  /* Center vertically in the input container */
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+}
+
+.form-box button {
   width: 100%;
   padding: 10px;
   background-color: #27ae60;
@@ -44,13 +98,20 @@ button {
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  margin-top: 10px;
 }
- 
-button:hover {
+
+.form-box button:hover {
   background-color: #219150;
 }
- 
+
 .toggle {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  .register-form {
+    grid-template-columns: 1fr;
+  }
 }
