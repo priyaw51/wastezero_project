@@ -6,15 +6,19 @@ import Dashboard from "./pages/Dashboards/Dashboard";
 import Profile from "./pages/Profile";
 import "./App.css";
 
+import { AuthProvider } from "./context/AuthContext";
+
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 }

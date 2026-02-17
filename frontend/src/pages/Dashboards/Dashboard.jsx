@@ -1,18 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import AdminDashboard from "./AdminDashboard";
 import VolunteerDashboard from "./VolunteerDashboard";
 import NgoDashboard from "./NgoDashboard";
+import { useAuth } from "../../context/AuthContext";
 
 function Dashboard() {
-    const [user, setUser] = useState(null);
+    const { user } = useAuth();
     const [isDarkMode, setIsDarkMode] = useState(false);
-
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-        setUser(storedUser);
-    }, []);
 
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);

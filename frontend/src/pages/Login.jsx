@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { login, verifyOtp } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -24,13 +25,11 @@ function Login() {
     if (showOtpInput) {
       // Verify OTP logic
       try {
-        const response = await axios.post("http://localhost:3000/api/auth/verify-otp", {
+        await verifyOtp({
           email: formData.email,
           otp: otp
         });
         alert("Login Successful!");
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        localStorage.setItem("token", response.data.token);
         navigate("/dashboard");
       } catch (error) {
         console.error("Verification Error:", error);
@@ -39,8 +38,8 @@ function Login() {
     } else {
       // Login and Send OTP
       try {
-        const response = await axios.post("http://localhost:3000/api/auth/login", formData);
-        alert(response.data.message);
+        const response = await login(formData); // This now calls AuthService.login which returns data but doesn't set context user yet
+        alert(response.message);
         setShowOtpInput(true);
       } catch (error) {
         console.error("Error:", error);

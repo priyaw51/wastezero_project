@@ -1,14 +1,18 @@
 import React from 'react';
-import { FaSearch, FaBell, FaUserCircle, FaChevronDown, FaSignOutAlt } from 'react-icons/fa';
+import { FaSearch, FaBell, FaChevronDown, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-const Navbar = ({ user, isDarkMode }) => {
+const Navbar = ({ isDarkMode }) => {
+    const { user, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-    // We need to use window.location or pass useNavigate from parent if allowed, 
-    // but better to just use window.location.href or imported hook if we convert to proper component.
-    // Since this is a .jsx file, we can import useNavigate.
+    const navigate = useNavigate();
 
-    // Note: I will add the import in a separate edit or assume I can rewrite the whole file for cleaner imports.
-    // Let's rewrite the imports and the component to be safe.
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
+
     return (
         <div className={`h-16 flex items-center justify-between px-6 shadow-sm ${isDarkMode ? 'bg-gray-800 border-b border-gray-700 text-white' : 'bg-white text-gray-800'}`}>
 
@@ -45,12 +49,8 @@ const Navbar = ({ user, isDarkMode }) => {
                     {isDropdownOpen && (
                         <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-50 ${isDarkMode ? 'bg-gray-700' : 'bg-white border border-gray-100'}`}>
                             <button
-                                onClick={() => {
-                                    localStorage.removeItem("token");
-                                    localStorage.removeItem("user");
-                                    window.location.href = "/";
-                                }}
-                                className={`block w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${isDarkMode ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-100'}`}
+                                onClick={handleLogout}
+                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${isDarkMode ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-100'}`}
                             >
                                 <FaSignOutAlt />
                                 Sign Out

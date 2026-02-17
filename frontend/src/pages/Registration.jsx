@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import MapPicker from "../components/MapPicker";
+import { useAuth } from "../context/AuthContext";
 
 function Register() {
   const navigate = useNavigate();
+  const { register, verifyOtp } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -39,13 +40,11 @@ function Register() {
     if (showOtpInput) {
       // Verify OTP logic
       try {
-        const response = await axios.post("http://localhost:3000/api/auth/verify-otp", {
+        await verifyOtp({
           email: formData.email,
           otp: otp
         });
         alert("Verification Successful! You are now logged in.");
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        localStorage.setItem("token", response.data.token);
         navigate("/dashboard");
       } catch (error) {
         console.error("Verification Error:", error);
@@ -68,9 +67,8 @@ function Register() {
       delete submissionData.longitude;
 
       try {
-        // Temporarily use register endpoint which now sends OTP
-        const response = await axios.post("http://localhost:3000/api/auth/register", submissionData);
-        alert(response.data.message);
+        const responseData = await register(submissionData);
+        alert(responseData.message);
         setShowOtpInput(true);
       } catch (error) {
         console.error("Registration Error:", error);
