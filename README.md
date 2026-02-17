@@ -100,8 +100,8 @@ The frontend is built with **React + Vite + TailwindCSS**.
 - **Validation:** Joi
 
 ## 🤝 Contribution Workflow
-1. Pull the latest changes: `git pull origin main`
-2. Create a new branch: `git checkout -b feature-name`
+1. Pull the latest changes: `git pull origin pawnesh-dev` (or `git pull origin main`)
+2. Create a new branch (Optional): `git checkout -b feature-name`
 3. Commit your changes: `git commit -m "Added feature X"`
 4. Push to GitHub: `git push origin feature-name`
 5. Create a Pull Request (PR) for review.
