@@ -5,15 +5,11 @@ import AdminDashboard from "./AdminDashboard";
 import VolunteerDashboard from "./VolunteerDashboard";
 import NgoDashboard from "./NgoDashboard";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
 function Dashboard() {
     const { user } = useAuth();
-    const [isDarkMode, setIsDarkMode] = useState(false);
-
-    const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-        document.documentElement.classList.toggle('dark');
-    };
+    const { isDarkMode } = useTheme();
 
     const renderDashboardContent = () => {
         if (!user) return <div>Loading...</div>;
@@ -48,12 +44,12 @@ function Dashboard() {
     return (
         <div className={`flex h-screen w-full transition-colors duration-200 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-800'}`}>
             {/* Sidebar - Fixed width */}
-            <Sidebar user={user} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+            <Sidebar />
 
             {/* Main Content Area - Takes remaining width and scrolls */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Navbar */}
-                <Navbar user={user} isDarkMode={isDarkMode} />
+                <Navbar />
 
                 {/* Scrollable Content */}
                 <main className="flex-1 overflow-y-auto p-4">

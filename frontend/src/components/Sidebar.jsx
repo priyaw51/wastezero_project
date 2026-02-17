@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import {
     FaThLarge,
     FaCalendarAlt,
@@ -14,7 +16,9 @@ import {
     FaSun
 } from 'react-icons/fa';
 
-const Sidebar = ({ user, isDarkMode, toggleTheme }) => {
+const Sidebar = () => {
+    const { user } = useAuth();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     const menuItems = [
         { name: 'Dashboard', icon: <FaThLarge />, path: '/dashboard' },

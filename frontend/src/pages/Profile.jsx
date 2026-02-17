@@ -3,9 +3,11 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 const Profile = () => {
     const { user, setUser } = useAuth(); // Assuming setUser is exposed or we need to update context
+    const { isDarkMode } = useTheme();
     // Actually AuthContext exposes setUser via verifyOtp/login but maybe not directly? 
     // Let's check AuthContext again. It exposes user, login, register, verifyOtp, logout.
     // It does NOT expose setUser directly.
@@ -19,7 +21,6 @@ const Profile = () => {
     // Let's assume for this step I just read it. I might need to add `updateUser` to context later.
 
     const [activeTab, setActiveTab] = useState("profile");
-    const [isDarkMode, setIsDarkMode] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -47,11 +48,6 @@ const Profile = () => {
             });
         }
     }, [user]);
-
-    const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-        document.documentElement.classList.toggle("dark");
-    };
 
     const handleProfileChange = (e) => {
         const { name, value } = e.target;
@@ -132,11 +128,11 @@ const Profile = () => {
 
     return (
         <div className={`flex h-screen w-full transition-colors duration-200 ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"}`}>
-            <Sidebar user={user} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+            <Sidebar />
 
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Navbar */}
-                <Navbar user={user} isDarkMode={isDarkMode} />
+                <Navbar />
 
                 {/* Scrollable Main Content */}
                 <main className="flex-1 overflow-y-auto p-8">

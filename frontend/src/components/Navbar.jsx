@@ -1,10 +1,12 @@
-import React from 'react';
-import { FaSearch, FaBell, FaChevronDown, FaSignOutAlt } from 'react-icons/fa';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
+import { FaSearch, FaBell, FaChevronDown, FaSignOutAlt } from 'react-icons/fa';
 
-const Navbar = ({ isDarkMode }) => {
+const Navbar = () => {
     const { user, logout } = useAuth();
+    const { isDarkMode } = useTheme();
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
     const navigate = useNavigate();
 
