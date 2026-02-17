@@ -11,6 +11,9 @@ import { ThemeProvider } from "./context/ThemeContext";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
+import OpportunityList from "./pages/Opportunities/OpportunityList";
+import OpportunityForm from "./pages/Opportunities/OpportunityForm";
+
 function App() {
   return (
     <Router>
@@ -25,10 +28,15 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+
+              {/* Opportunity Routes */}
+              <Route path="/opportunities" element={<OpportunityList />} />
+              <Route path="/opportunities/create" element={<OpportunityForm />} />
+              <Route path="/opportunities/edit/:id" element={<OpportunityForm />} />
             </Route>
 
             {/* Example of Role-Based Route (Future usage) */}
-            {/* 
+            {/*
             <Route element={<ProtectedRoute roles={['admin']} />}>
                 <Route path="/admin" element={<AdminPanel />} />
             </Route>

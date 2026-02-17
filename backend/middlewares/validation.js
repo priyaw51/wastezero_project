@@ -27,4 +27,17 @@ const loginSchema = Joi.object({
     password: Joi.string().required()
 });
 
-module.exports = { validate, registerSchema, loginSchema };
+const opportunitySchema = Joi.object({
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    address: Joi.string().required(),
+    required_skills: Joi.array().items(Joi.string()).optional(),
+    duration: Joi.string().optional(),
+    location: Joi.object({
+        type: Joi.string().valid('Point'),
+        coordinates: Joi.array().items(Joi.number()).length(2)
+    }).optional(),
+    status: Joi.string().valid('open', 'closed', 'in-progress').optional()
+});
+
+module.exports = { validate, registerSchema, loginSchema, opportunitySchema };

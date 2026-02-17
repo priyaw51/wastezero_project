@@ -15,6 +15,7 @@ async function start() {
   // mount routes
   app.use('/api/auth', require('./routes/auth'));
   app.use('/api/users', require('./routes/users'));
+  app.use('/api/opportunities', require('./routes/opportunities'));
 
   app.get('/', (req, res) => {
     res.send('Hello from backend (Express)');
