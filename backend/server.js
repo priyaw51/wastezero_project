@@ -20,6 +20,10 @@ async function start() {
     res.send('Hello from backend (Express)');
   });
 
+  // Centralized Error Handler - MUST come after routes
+  app.use(require('./middlewares/errorHandler'));
+
+  // Start server only after error handler is registered
   app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });

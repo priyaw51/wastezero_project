@@ -9,16 +9,30 @@ import "./App.css";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
+import ProtectedRoute from "./routes/ProtectedRoute";
+
 function App() {
   return (
     <Router>
       <ThemeProvider>
         <AuthProvider>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
+
+            {/* Protected Routes - Accessible by any authenticated user */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+
+            {/* Example of Role-Based Route (Future usage) */}
+            {/* 
+            <Route element={<ProtectedRoute roles={['admin']} />}>
+                <Route path="/admin" element={<AdminPanel />} />
+            </Route>
+            */}
           </Routes>
         </AuthProvider>
       </ThemeProvider>
