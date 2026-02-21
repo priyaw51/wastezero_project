@@ -11,4 +11,8 @@ async function connect() {
   }
 }
 
+<<<<<<< Updated upstream
 module.exports = { connect };
+=======
+module.exports = { connect };
+>>>>>>> Stashed changes

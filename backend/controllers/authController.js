@@ -35,7 +35,8 @@ async function register(req, res) {
     });
 
     try {
-      await sendVerificationEmail(email, otp, 'Your Registration OTP');
+      //await sendVerificationEmail(email, otp, 'Your Registration OTP');
+      console.log("OTP:", otp);
       return res.status(200).json({ message: 'OTP sent to your email. Please verify to complete registration.', email: email });
     } catch (emailError) {
       // If email fails, user exists but can't verify. Maybe delete user or just return error?
@@ -67,7 +68,8 @@ async function login(req, res) {
     await user.save();
 
     try {
-      await sendVerificationEmail(email, otp, 'Your Login OTP');
+      // await sendVerificationEmail(email, otp, 'Your Login OTP');
+      console.log("OTP:", otp);
       return res.status(200).json({ message: 'OTP sent to your email.', email: email });
     } catch (emailError) {
       return res.status(500).json({ message: 'Failed to send OTP email.' });
@@ -113,4 +115,4 @@ async function verifyOTP(req, res) {
   }
 }
 
-module.exports = { register, login, verifyOTP };
+module.exports = { login, register, verifyOTP };
