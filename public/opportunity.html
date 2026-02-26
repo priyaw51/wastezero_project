@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Volunteer Opportunities</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <div class="sidebar">
+        <h2>WasteZero</h2>
+        <ul>
+            <li>Dashboard</li>
+            <li>Schedule Pickup</li>
+            <li class="active">Opportunities</li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <div class="top-bar">
+            <h2>Volunteer Opportunities</h2>
+            <a href="edit.html">
+                <button class="primary-btn">+ Create Opportunity</button>
+            </a>
+        </div>
+
+        <div id="opportunityContainer"></div>
+    </div>
+
+</div>
+
+<script>
+async function loadOpportunities() {
+    const res = await fetch("/opportunities");
+    const data = await res.json();
+
+    const container = document.getElementById("opportunityContainer");
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+        container.innerHTML = "<p>No opportunities available.</p>";
+        return;
+    }
+
+    data.forEach(op => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <h3>${op.title}</h3>
+            <p>${op.description}</p>
+            <p><strong>Date:</strong> ${op.date}</p>
+            <p><strong>Duration:</strong> ${op.duration}</p>
+            <p><strong>Location:</strong> ${op.location}</p>
+
+            <div style="margin-top:10px;">
+                <button onclick="editOpportunity('${op._id}')">Edit</button>
+                <button onclick="deleteOpportunity('${op._id}')" style="background:blue;color:white;">
+                    Delete
+                </button>
+            </div>
+            <hr>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+function editOpportunity(id) {
+    window.location.href = `edit.html?id=${id}`;
+}
+
+async function deleteOpportunity(id) {
+    if (!confirm("Are you sure you want to delete this opportunity?")) return;
+
+    await fetch(`/opportunities/${id}`, {
+        method: "DELETE"
+    });
+
+    loadOpportunities(); // reload after delete
+}
+
+document.addEventListener("DOMContentLoaded", loadOpportunities);
+</script>
+
+</body>
+</html>

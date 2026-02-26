@@ -1,0 +1,120 @@
+/* ===== GLOBAL ===== */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+}
+
+/* ===== SIDEBAR ===== */
+
+.sidebar {
+    width: 220px;
+    background: #1f2937;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;   /* fixed */
+    text-decoration: none;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 6px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #20d087;
+}
+
+/* ===== CONTENT AREA ===== */
+
+.content {
+    flex: 1;
+    padding: 30px;
+    background: #767c7e;
+    color: white;
+}
+
+/* ===== FORMS ===== */
+
+form input,
+form select {
+    width: 60%;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* ===== BUTTON ===== */
+
+button {
+    padding: 8px 15px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+/* ===== CARDS ===== */
+
+.card,
+.message-box,
+.impact-box {
+    background: white;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    color: black;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.summary {
+    display: flex;
+    gap: 20px;
+}
+
+/* ===== MESSAGE PAGE ===== */
+
+.message-page {
+    background: #f0f9ff;
+    color: black;
+}
+
+.message-page h1 {
+    color: #0c4a6e;
+}
+
+.message-box {
+    border-left: 5px solid #0284c7;
+}
+
+/* ===== IMPACT PAGE ===== */
+
+.impact-page {
+    background: #f0fdf4;
+    color: black;
+}
+
+.impact-page h1 {
+    color: #166534;
+}
+
+.impact-box {
+    border-left: 6px solid #22c55e;
+}

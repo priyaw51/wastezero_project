@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create / Edit Opportunity</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <div class="sidebar">
+        <h2>WasteZero</h2>
+        <ul>
+            <li>Dashboard</li>
+            <li>Schedule Pickup</li>
+            <li class="active">Opportunities</li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <h2 id="formTitle">Create Opportunity</h2>
+
+        <form id="opportunityForm" class="form-card">
+
+            <input type="hidden" id="opId">
+
+            <label>Title</label>
+            <input type="text" id="title" required>
+
+            <label>Description</label>
+            <textarea id="description" required></textarea>
+
+            <label>Date</label>
+            <input type="date" id="date" required>
+
+            <label>Duration</label>
+            <input type="text" id="duration" required>
+
+            <label>Location</label>
+            <input type="text" id="location" required>
+
+            <button type="submit" class="primary-btn">
+                Save Changes
+            </button>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+
+    const form = document.getElementById("opportunityForm");
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (id) {
+        document.getElementById("formTitle").innerText = "Edit Opportunity";
+        document.getElementById("opId").value = id;
+
+        const res = await fetch(`/opportunities/${id}`);
+        const data = await res.json();
+
+        document.getElementById("title").value = data.title;
+        document.getElementById("description").value = data.description;
+        document.getElementById("date").value = data.date;
+        document.getElementById("duration").value = data.duration;
+        document.getElementById("location").value = data.location;
+    }
+
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const opId = document.getElementById("opId").value;
+
+        const data = {
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value,
+            date: document.getElementById("date").value,
+            duration: document.getElementById("duration").value,
+            location: document.getElementById("location").value
+        };
+
+        if (opId) {
+            await fetch(`/opportunities/${opId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+        } else {
+            await fetch("/opportunities", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+        }
+
+        window.location.href = "opportunity.html";
+    });
+
+});
+</script>
+
+</body>
+</html>

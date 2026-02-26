@@ -1,0 +1,108 @@
+/* ===== Improved Card Style ===== */
+.card {
+    background: #ecabab;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+/* ===== Buttons ===== */
+button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+/* Primary Button */
+.primary-btn {
+    background: #4CAF50;
+    color: white;
+}
+
+.primary-btn:hover {
+    background: #43a047;
+}
+
+/* Edit Button */
+.edit-btn {
+    background: #c44486;
+    color: rgb(18, 16, 16);
+}
+
+.edit-btn:hover {
+    background: #1976D2;
+}
+
+/* Delete Button */
+.delete-btn {
+    background: #3a8d39;
+    color: rgb(27, 26, 26);
+}
+
+.delete-btn:hover {
+    background: #D32F2F;
+}
+
+/* Sidebar Upgrade */
+.sidebar {
+    background: #1e293b;
+    color: white;
+}
+
+.sidebar ul li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.sidebar ul li.active {
+    background: #334155;
+    border-radius: 5px;
+}
+
+/* Main Background */
+.main {
+    background: #6edda5;
+    padding: 20px;
+}
+/* ===== Opportunity Page Background ===== */
+.opportunity-page {
+    background-color: #5c8d63;  /* pista color */
+}
+
+/* Optional: make main area transparent */
+.opportunity-page .main {
+    background: transparent;
+}
+
+/* ===== Edit Button ===== */
+.opportunity-page .edit-btn {
+    background-color: #007bff;  /* blue */
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.opportunity-page .edit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* ===== Delete Button ===== */
+.opportunity-page .delete-btn {
+    background-color: #dc3545;  /* red */
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.opportunity-page .delete-btn:hover {
+    background-color: #a71d2a;
+}
+

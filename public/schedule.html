@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Schedule Pickup</title>
+    <link rel="stylesheet" href="sidebar.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>WasteZero</h2>
+        <a href="dash.html">Dashboard</a>
+        <a href="schedule.html" class="active">Schedule Pickup</a>
+        <a href="opportunity.html">Opportunities</a>
+        <a href="message.html">Messages</a>
+        <a href="impact.html">My Impact</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>Schedule Waste Pickup</h1>
+
+        <form id="pickupForm">
+            <label>Full Name:</label><br>
+            <input type="text" id="name" required><br><br>
+
+            <label>Address:</label><br>
+            <input type="text" id="address" required><br><br>
+
+            <label>Waste Type:</label><br>
+            <select id="wasteType" required>
+                <option value="">Select</option>
+                <option>Plastic</option>
+                <option>Organic</option>
+                <option>E-Waste</option>
+                <option>Mixed</option>
+            </select><br><br>
+
+            <label>Pickup Date:</label><br>
+            <input type="date" id="date" required><br><br>
+
+            <button type="submit">Schedule Pickup</button>
+        </form>
+
+        <p id="successMsg" style="color:green; font-weight:bold;"></p>
+    </div>
+
+</div>
+
+<!-- Script -->
+<script>
+document.getElementById("pickupForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    let name = document.getElementById("name").value;
+    let address = document.getElementById("address").value;
+    let wasteType = document.getElementById("wasteType").value;
+    let date = document.getElementById("date").value;
+
+    if(name && address && wasteType && date){
+        document.getElementById("successMsg").innerText =
+            "✅ Pickup scheduled successfully for " + date + "!";
+
+        document.getElementById("pickupForm").reset();
+    }
+});
+</script>
+
+</body>
+</html>
