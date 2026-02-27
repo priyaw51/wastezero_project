@@ -13,6 +13,7 @@ const registerSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
     role: Joi.string().valid('user', 'admin', 'ngo', 'volunteer').required(),
+    securityCode: Joi.string().allow('').optional(),
     address: Joi.string().required(),
     skills: Joi.array().items(Joi.string()).optional(),
     bio: Joi.string().optional(),

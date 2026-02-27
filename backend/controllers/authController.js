@@ -8,9 +8,15 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 async function register(req, res) {
   try {
-    const { name, email, password, role, skills, bio, location, address } = req.body;
+    const { name, email, password, role, skills, bio, location, address, securityCode } = req.body;
     if (!name || !email || !password || !role || !address) {
       return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    if (role === 'admin') {
+      if (!securityCode || securityCode !== process.env.ADMIN_SECURITY_CODE) {
+        return res.status(403).json({ message: "Security code didn't match. You can't register as admin." });
+      }
     }
 
     const existing = await User.findOne({ email });
@@ -113,4 +119,17 @@ async function verifyOTP(req, res) {
   }
 }
 
-module.exports = { register, login, verifyOTP };
+async function verifyAdminCode(req, res) {
+  try {
+    const { securityCode } = req.body;
+    if (!securityCode || securityCode !== process.env.ADMIN_SECURITY_CODE) {
+      return res.status(403).json({ success: false, message: "Security code didn't match." });
+    }
+    return res.status(200).json({ success: true, message: "Security code verified." });
+  } catch (err) {
+    console.error('verifyAdminCode error', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
+
+module.exports = { register, login, verifyOTP, verifyAdminCode };
