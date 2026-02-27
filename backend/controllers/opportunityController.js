@@ -142,8 +142,8 @@ const applyToOpportunity = async (req, res, next) => {
 
         //  prevent duplicate apply
         const alreadyApplied = await Application.findOne({
-            user: userId,
-            opportunity: id,
+            volunteer_id: userId,
+            opportunity_id: id,
         });
 
         if (alreadyApplied) {
@@ -173,8 +173,8 @@ const getAppliedOpportunities = async (req, res, next) => {
     try {
         const userId = req.user.id;
 
-        const applications = await Application.find({ user: userId })
-            .populate("opportunity")
+        const applications = await Application.find({ volunteer_id: userId })
+            .populate("opportunity_id")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
