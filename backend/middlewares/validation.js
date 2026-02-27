@@ -33,6 +33,7 @@ const opportunitySchema = Joi.object({
     address: Joi.string().required(),
     required_skills: Joi.array().items(Joi.string()).optional(),
     duration: Joi.string().optional(),
+    date: Joi.date().optional(),
     location: Joi.object({
         type: Joi.string().valid('Point'),
         coordinates: Joi.array().items(Joi.number()).length(2)
