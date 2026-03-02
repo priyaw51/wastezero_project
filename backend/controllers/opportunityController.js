@@ -3,8 +3,6 @@ const Application = require('../models/Application');
 const createOpportunity = async (req, res, next) => {
     try {
 
-        console.log(req.user);   // ⭐ paste here
-
         const { title, description, required_skills, duration, location, address } = req.body;
 
         const opportunity = await Opportunity.create({

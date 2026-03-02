@@ -3,6 +3,9 @@ require('dotenv').config();
 
 const db = require('./config/db');
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const { initSocket } = require('./socket/index');
 
 async function start() {
   await db.connect();
@@ -10,23 +13,40 @@ async function start() {
   const app = express();
   const port = process.env.PORT || 3000;
 
+  // CORS for REST endpoints
   app.use(require('cors')());
   app.use(express.json());
-  // mount routes
+
+  // Mount routes
   app.use('/api/auth', require('./routes/auth'));
   app.use('/api/users', require('./routes/users'));
   app.use('/api/opportunities', require('./routes/opportunities'));
+  app.use('/api/matches', require('./routes/matches'));
+  app.use('/api/chat', require('./routes/chat'));
 
   app.get('/', (req, res) => {
-    res.send('Hello from backend (Express)');
+    res.send('WasteZero Backend is running');
   });
 
   // Centralized Error Handler - MUST come after routes
   app.use(require('./middlewares/errorHandler'));
 
-  // Start server only after error handler is registered
-  app.listen(port, () => {
+  // Create HTTP server and attach Socket.io
+  const server = http.createServer(app);
+  const io = new Server(server, {
+    cors: {
+      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+      methods: ['GET', 'POST']
+    }
+  });
+
+  // Initialize all socket event handlers
+  initSocket(io);
+
+  // Start the HTTP server (not app.listen — socket.io needs the http server)
+  server.listen(port, () => {
     console.log(`Server running on port ${port}`);
+    console.log(`Socket.io ready`);
   });
 }
 
