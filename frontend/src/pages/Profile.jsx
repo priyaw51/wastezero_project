@@ -4,21 +4,16 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-    const { user, setUser } = useAuth(); // Assuming setUser is exposed or we need to update context
+    const { user, setUser } = useAuth();
     const { isDarkMode } = useTheme();
-    // Actually AuthContext exposes setUser via verifyOtp/login but maybe not directly? 
-    // Let's check AuthContext again. It exposes user, login, register, verifyOtp, logout.
-    // It does NOT expose setUser directly.
-    // However, when we update profile, we need to update the global user state.
-    // We should probably expose a method `updateUser` in AuthContext or just rely on re-fetching?
-    // For now, let's just read `user` from context. 
-    // And for `setFormData`, we use `user`.
+    const { id: paramId } = useParams();
+    const navigate = useNavigate();
 
-    // Wait, if I update profile, I need the UI to reflect changes (like name in sidebar).
-    // So AuthContext needs a way to update the user.
-    // Let's assume for this step I just read it. I might need to add `updateUser` to context later.
+    // Profile being viewed (current user vs other user)
+    const [profileUser, setProfileUser] = useState(user);
 
     const [activeTab, setActiveTab] = useState("profile");
     const [formData, setFormData] = useState({
@@ -37,17 +32,37 @@ const Profile = () => {
     });
 
     useEffect(() => {
-        if (user) {
+        // If viewing another user's profile, fetch it
+        const load = async () => {
+            if (paramId && user && paramId !== user._id) {
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await axios.get(`http://localhost:3000/api/users/${paramId}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setProfileUser(res.data.data || res.data);
+                } catch (err) {
+                    console.error('Failed to load profile', err);
+                }
+            } else {
+                setProfileUser(user);
+            }
+        };
+        load();
+    }, [paramId, user]);
+
+    useEffect(() => {
+        if (profileUser) {
             setFormData({
-                name: user.name || "",
-                email: user.email || "",
-                location: user.location || { coordinates: [0, 0] },
-                skills: user.skills || [],
-                bio: user.bio || "",
-                address: user.address || "",
+                name: profileUser.name || "",
+                email: profileUser.email || "",
+                location: profileUser.location || { coordinates: [0, 0] },
+                skills: profileUser.skills || [],
+                bio: profileUser.bio || "",
+                address: profileUser.address || "",
             });
         }
-    }, [user]);
+    }, [profileUser]);
 
     const handleProfileChange = (e) => {
         const { name, value } = e.target;
@@ -138,11 +153,31 @@ const Profile = () => {
                 <main className="flex-1 overflow-y-auto p-8">
                     <div className="max-w-4xl mx-auto">
                         <div className="mb-6">
-                            <h1 className="text-2xl font-bold">My Profile</h1>
-                            <p className="text-gray-500">Manage your account information and settings</p>
+                            <h1 className="text-2xl font-bold">
+                                {paramId && profileUser && paramId !== user._id
+                                    ? `${profileUser.name || 'User'}'s Profile`
+                                    : 'My Profile'}
+                            </h1>
+                            {paramId && profileUser && paramId !== user._id && (
+                                <button
+                                    onClick={() => {
+                                        const rid = [user._id, profileUser._id].sort().join('_');
+                                        navigate(`/chat/${rid}`);
+                                    }}
+                                    className={`mt-2 px-4 py-2 rounded-lg font-medium transition-colors ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                                >
+                                    Chat
+                                </button>
+                            )}
+                            <p className="text-gray-500">
+                                {paramId && profileUser && paramId !== user._id
+                                    ? `View ${profileUser.name || 'user'}'s profile`
+                                    : 'Manage your account information and settings'}
+                            </p>
                         </div>
 
-                        {/* Tabs */}
+                        {/* Tabs - Only show for own profile */}
+                        {!paramId || (user && paramId === user._id) ? (
                         <div className={`flex mb-6 rounded-lg p-1 w-64 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
                             <button
                                 onClick={() => setActiveTab("profile")}
@@ -304,6 +339,43 @@ const Profile = () => {
                             )}
 
                         </div>
+                        ) : (
+                            <div className={`rounded-xl shadow-sm border p-6 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-4">User Information</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Full Name</label>
+                                            <p className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-800'}`}>{profileUser?.name}</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Email</label>
+                                            <p className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-800'}`}>{profileUser?.email}</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Bio</label>
+                                            <p className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-800'}`}>{profileUser?.bio || 'No bio provided'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2">Address</label>
+                                            <p className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-800'}`}>{profileUser?.address}</p>
+                                        </div>
+                                        {profileUser?.skills?.length > 0 && (
+                                            <div>
+                                                <label className="block text-sm font-medium mb-2">Skills</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {profileUser.skills.map((skill, idx) => (
+                                                        <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </main>
             </div>

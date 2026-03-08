@@ -13,6 +13,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 
 import OpportunityList from "./pages/Opportunities/OpportunityList";
 import OpportunityForm from "./pages/Opportunities/OpportunityForm";
+import ChatWindow from "./pages/Chat/ChatWindow";
 
 function App() {
   return (
@@ -28,11 +29,13 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/:id" element={<Profile />} />
 
               {/* Opportunity Routes */}
               <Route path="/opportunities" element={<OpportunityList />} />
               <Route path="/opportunities/create" element={<OpportunityForm />} />
               <Route path="/opportunities/edit/:id" element={<OpportunityForm />} />
+              <Route path="/chat/:roomId" element={<ChatWindow />} />
             </Route>
 
             {/* Example of Role-Based Route (Future usage) */}
