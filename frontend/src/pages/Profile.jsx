@@ -178,28 +178,29 @@ const Profile = () => {
 
                         {/* Tabs - Only show for own profile */}
                         {!paramId || (user && paramId === user._id) ? (
-                        <div className={`flex mb-6 rounded-lg p-1 w-64 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
-                            <button
-                                onClick={() => setActiveTab("profile")}
-                                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${activeTab === "profile"
-                                    ? "bg-white text-gray-800 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700"
-                                    }`}
-                            >
-                                Profile
-                            </button>
-                            <button
-                                onClick={() => setActiveTab("password")}
-                                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${activeTab === "password"
-                                    ? "bg-white text-gray-800 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700"
-                                    }`}
-                            >
-                                Password
-                            </button>
-                        </div>
+                            <>
+                                <div className={`flex mb-6 rounded-lg p-1 w-64 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+                                    <button
+                                        onClick={() => setActiveTab("profile")}
+                                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${activeTab === "profile"
+                                            ? "bg-white text-gray-800 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700"
+                                            }`}
+                                    >
+                                        Profile
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab("password")}
+                                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${activeTab === "password"
+                                            ? "bg-white text-gray-800 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700"
+                                            }`}
+                                    >
+                                        Password
+                                    </button>
+                                </div>
 
-                        <div className={`rounded-xl shadow-sm border p-6 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                <div className={`rounded-xl shadow-sm border p-6 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
 
                             {activeTab === "profile" && (
                                 <div>
@@ -338,7 +339,8 @@ const Profile = () => {
                                 </div>
                             )}
 
-                        </div>
+                                </div>
+                            </>
                         ) : (
                             <div className={`rounded-xl shadow-sm border p-6 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
                                 <div>
