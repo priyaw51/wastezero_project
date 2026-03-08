@@ -107,4 +107,4 @@ The frontend is built with **React + Vite + TailwindCSS**.
 5. Create a Pull Request (PR) for review.
 
 
-Note: here feature name is your branch name
+Note: here feature name is your branch name.
