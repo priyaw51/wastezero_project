@@ -7,7 +7,7 @@ const router = express.Router();
 // GET /api/chat/:roomId - Get message history for a room
 router.get('/:roomId', auth, async (req, res) => {
     try {
-        const { roomId } = req.params;
+        const { roomId } = req.params;        
         const userId = req.user.id;
 
         // Check if user is part of the room (roomId is user1_user2 sorted)
