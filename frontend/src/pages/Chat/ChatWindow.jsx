@@ -136,7 +136,20 @@ const ChatWindow = () => {
                     <div className="flex items-center gap-3">
                         <FaUserCircle size={40} className="text-gray-400" />
                         <div>
-                            <h2 className="font-semibold text-lg leading-tight">Conversation</h2>
+                            <h2 className="font-semibold text-lg leading-tight">
+                                {(() => {
+                                    const otherMsg = messages.find(
+                                        (m) => String(m.sender_id?._id || m.sender_id || m.sender) === String(receiverId) || String(m.receiver_id?._id || m.receiver_id || m.receiver) === String(receiverId)
+                                    );
+                                    if (otherMsg) {
+                                        const r1 = otherMsg.sender_id;
+                                        const r2 = otherMsg.receiver_id;
+                                        if (String(r1?._id || r1) === String(receiverId) && r1?.name) return r1.name;
+                                        if (String(r2?._id || r2) === String(receiverId) && r2?.name) return r2.name;
+                                    }
+                                    return "Conversation";
+                                })()}
+                            </h2>
                             <p className="text-xs text-green-500 font-medium">Secured Room</p>
                         </div>
                     </div>
@@ -156,7 +169,8 @@ const ChatWindow = () => {
                         </div>
                     ) : (
                         messages.map((msg, index) => {
-                            const isMe = msg.sender_id === user._id;
+                            const senderId = msg.sender_id?._id || msg.sender_id || msg.sender;
+                            const isMe = String(senderId) === String(user._id);
 
                             return (
                                 <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
