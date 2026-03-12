@@ -35,8 +35,14 @@ const ChatWindow = () => {
                 const response = await axios.get(`http://localhost:3000/api/chat/${roomId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (response.data.success) {
-                    setMessages(response.data.data);
+                if (response.data.success && Array.isArray(response.data.data)) {
+                    // Normalize message shape for UI
+                    const apiMessages = response.data.data.map((m) => ({
+                        ...m,
+                        senderId: m.sender_id?._id || m.sender_id || m.sender,
+                        timestamp: m.createdAt || m.timestamp
+                    }));
+                    setMessages(apiMessages);
                 }
             } catch (err) {
                 setError('Failed to load messages');
@@ -67,9 +73,17 @@ const ChatWindow = () => {
         // Join room
         socket.emit('join_room', { roomId });
 
+        // Mark messages as read for this room
+        socket.emit('mark_messages_read', { roomId, userId: user._id });
+
         // Listen for messages
         socket.on('receive_message', (message) => {
-            setMessages(prev => [...prev, message]);
+            const normalized = {
+                ...message,
+                senderId: message.sender_id?._id || message.sender_id || message.sender,
+                timestamp: message.createdAt || message.timestamp
+            };
+            setMessages((prev) => [...prev, normalized]);
         });
 
         // Listen for notifications
@@ -84,10 +98,16 @@ const ChatWindow = () => {
     }, [user, roomId]);
 
     const handleSendMessage = () => {
-        if (!newMessage.trim() || !socketRef.current) return;
+        if (!newMessage.trim() || !socketRef.current || !user) return;
+
+        const [userA, userB] = String(roomId).split('_');
+        const senderId = user._id;
+        const receiverId = senderId === userA ? userB : userA;
 
         const messageData = {
             roomId,
+            senderId,
+            receiverId,
             content: newMessage.trim()
         };
 
@@ -155,7 +175,13 @@ const ChatWindow = () => {
                     </div>
                 ) : (
                     messages.map((message, index) => {
-                        const isSent = message.sender === user._id;
+                        const senderId = message.senderId || message.sender_id?._id || message.sender_id || message.sender;
+                        const isSent =
+                            senderId && user?._id
+                                ? String(senderId) === String(user._id)
+                                : false;
+                        const ts = message.timestamp || message.createdAt;
+
                         return (
                             <div
                                 key={index}
@@ -171,8 +197,16 @@ const ChatWindow = () => {
                                     }`}
                                 >
                                     <p className="text-sm">{message.content}</p>
-                                    <p className={`text-xs mt-1 ${isSent ? 'text-green-100' : isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                        {formatTimestamp(message.timestamp)}
+                                    <p
+                                        className={`text-xs mt-1 ${
+                                            isSent
+                                                ? 'text-green-100'
+                                                : isDarkMode
+                                                    ? 'text-gray-400'
+                                                    : 'text-gray-500'
+                                        }`}
+                                    >
+                                        {formatTimestamp(ts)}
                                     </p>
                                 </div>
                             </div>

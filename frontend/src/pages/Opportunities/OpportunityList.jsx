@@ -34,7 +34,7 @@ const OpportunityList = () => {
                 // Load applied opportunities if user is volunteer
                 if (user?.role === 'volunteer') {
                     const applied = await opportunityService.getAppliedOpportunities();
-                    setAppliedOpportunities(new Set(applied.map(opp => opp._id)));
+                    setAppliedOpportunities(new Set(applied.map(opp => opp.opportunity_id?._id || opp.opportunity_id)));
                 }
             } catch (err) {
                 setError(err.message || 'Failed to load opportunities');

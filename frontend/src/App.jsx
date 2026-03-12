@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboards/Dashboard";
 import Profile from "./pages/Profile";
 import "./App.css";
 
+import ChatLayout from "./pages/Chat/ChatLayout";
+
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
@@ -13,8 +15,6 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 
 import OpportunityList from "./pages/Opportunities/OpportunityList";
 import OpportunityForm from "./pages/Opportunities/OpportunityForm";
-import ChatWindow from "./pages/Chat/ChatWindow";
-import ChatLayout from "./pages/Chat/ChatLayout";
 
 function App() {
   return (
@@ -36,9 +36,10 @@ function App() {
               <Route path="/opportunities" element={<OpportunityList />} />
               <Route path="/opportunities/create" element={<OpportunityForm />} />
               <Route path="/opportunities/edit/:id" element={<OpportunityForm />} />
-              <Route path="/chat/:roomId" element={<ChatWindow />} />
-              <Route path="/messages" element={<ChatLayout />} />
-              <Route path="/messages/:roomId" element={<ChatLayout />} />
+
+              {/* Chat Routes */}
+              <Route path="/chat" element={<ChatLayout />} />
+              <Route path="/chat/:roomId" element={<ChatLayout />} />
             </Route>
 
             {/* Example of Role-Based Route (Future usage) */}

@@ -60,16 +60,39 @@ const ChatList = ({ selectedRoomId, onSelectRoom }) => {
 
                 const token = localStorage.getItem('token');
 
-                // Attempt to load real conversations if an endpoint exists.
-                // If this fails, we gracefully fall back to mock data.
-                const response = await axios.get('http://localhost:3000/api/chat/conversations', {
+                // Load real conversations from backend. Falls back to mock data on failure.
+                const response = await axios.get('http://localhost:3000/api/chat/conversations/list', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
                 if (!isMounted) return;
 
                 if (response.data?.success && Array.isArray(response.data.data)) {
-                    setConversations(response.data.data);
+                    const apiConversations = response.data.data.map((conv) => {
+                        const last = conv.lastMessage || {};
+                        const senderId =
+                            last.sender_id?._id || last.sender_id || last.sender || null;
+                        const receiverId =
+                            last.receiver_id?._id || last.receiver_id || last.receiver || null;
+
+                        const currentUserId = user?._id || user?.id;
+                        const isSenderMe =
+                            currentUserId &&
+                            senderId &&
+                            String(senderId) === String(currentUserId);
+
+                        const otherUser = isSenderMe ? last.receiver_id : last.sender_id;
+
+                        return {
+                            id: conv.roomId,
+                            name: otherUser?.name || 'Conversation',
+                            lastMessage: last.content || 'No messages yet',
+                            timestamp: last.createdAt || last.timestamp,
+                            unreadCount: conv.unreadCount || 0
+                        };
+                    });
+
+                    setConversations(apiConversations);
                 } else {
                     setConversations(createMockConversations(user));
                 }

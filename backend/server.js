@@ -5,8 +5,7 @@ const db = require('./config/db');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const jwt = require('jsonwebtoken');
-const Message = require('./models/Message');
+const { initSocket } = require('./socket/index');
 
 async function start() {
   await db.connect();
@@ -14,64 +13,47 @@ async function start() {
   const app = express();
   const port = process.env.PORT || 3000;
 
+  // CORS for REST endpoints
   app.use(require('cors')());
   app.use(express.json());
-  // mount routes
+
+  // Mount routes
   app.use('/api/auth', require('./routes/auth'));
   app.use('/api/users', require('./routes/users'));
   app.use('/api/opportunities', require('./routes/opportunities'));
+  app.use('/api/matches', require('./routes/matches'));
   app.use('/api/chat', require('./routes/chat'));
+  app.use('/api/notifications', require('./routes/notification'));
+  app.use('/api/pickups', require('./routes/pickups'));
 
   app.get('/', (req, res) => {
-    res.send('Hello from backend (Express)');
+    res.send('WasteZero Backend is running');
   });
 
   // Centralized Error Handler - MUST come after routes
   app.use(require('./middlewares/errorHandler'));
 
-  // create http server & socket.io
+  // Create HTTP server and attach Socket.io
   const server = http.createServer(app);
   const io = new Server(server, {
-    cors: { origin: '*' }
+    cors: {
+      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+      methods: ['GET', 'POST']
+    }
   });
 
-  // helper to verify token and attach user info
-  const verifyToken = (token) => {
-    try {
-      return jwt.verify(token, process.env.JWT_SECRET || 'changeme');
-    } catch (e) {
-      return null;
-    }
-  };
+  // Initialize all socket event handlers
+  const onlineUsers = initSocket(io);
 
-  io.on('connection', (socket) => {
-    // grab token from handshake auth
-    const token = socket.handshake.auth?.token;
-    const decoded = token ? verifyToken(token.replace(/^Bearer\s/, '')) : null;
-    if (decoded) {
-      socket.user = decoded; // { id, role }
-    }
+  // Expose io + onlineUsers so controllers can push real-time events
+  // Usage in any controller: req.app.get('io'), req.app.get('onlineUsers')
+  app.set('io', io);
+  app.set('onlineUsers', onlineUsers);
 
-    socket.on('join_room', ({ roomId }) => {
-      if (roomId) socket.join(roomId);
-    });
-
-    socket.on('send_message', async ({ roomId, content }) => {
-      const senderId = socket.user?.id || null;
-      const msg = await Message.create({ roomId, sender: senderId, content });
-      io.to(roomId).emit('receive_message', {
-        sender: senderId,
-        content,
-        timestamp: msg.createdAt
-      });
-    });
-
-    // optional: handle disconnects etc.
-  });
-
-  // start http server instead of app
+  // Start the HTTP server
   server.listen(port, () => {
     console.log(`Server running on port ${port}`);
+    console.log(`Socket.io ready`);
   });
 }
 

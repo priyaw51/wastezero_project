@@ -12,7 +12,7 @@ const ChatLayout = () => {
     const { isDarkMode } = useTheme();
 
     const handleSelectRoom = (id) => {
-        navigate(`/messages/${id}`);
+        navigate(`/chat/${id}`);
     };
 
     return (
