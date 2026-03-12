@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import axios from 'axios';
+import { initiateSocketConnection } from '../../services/socketService';
 
 const createMockConversations = (user) => {
     const displayName = user?.name || 'Community Partner';
@@ -115,6 +116,59 @@ const ChatList = ({ selectedRoomId, onSelectRoom }) => {
         };
     }, [user]);
 
+    // Automatically clear unread bubble when selecting a room
+    useEffect(() => {
+        if (selectedRoomId) {
+            setConversations(prev =>
+                prev.map(conv =>
+                    conv.id === selectedRoomId
+                        ? { ...conv, unreadCount: 0 }
+                        : conv
+                )
+            );
+        }
+    }, [selectedRoomId]);
+
+    // Listen for new messages continuously to increment unread counter instantly
+    useEffect(() => {
+        if (!user?._id) return;
+        const socket = initiateSocketConnection(user._id);
+
+        const handleNewMessage = (msg) => {
+            setConversations((prev) => {
+                const isCurrentRoom = msg.roomId === selectedRoomId;
+
+                // Check if it's an existing conversation
+                const exists = prev.some(c => c.id === msg.roomId);
+
+                // If the message brings a completely brand new room, we can just log for now
+                if (!exists) {
+                    console.log('Received message from a new conversation! Refresh required to see in sidebar.');
+                    // (To avoid infinite fetch loops, we skip auto-refreshing here. The user gets a bell notification anyway.)
+                    return prev;
+                }
+
+                return prev.map((conv) => {
+                    if (conv.id === msg.roomId) {
+                        return {
+                            ...conv,
+                            lastMessage: msg.content,
+                            timestamp: msg.createdAt || new Date().toISOString(),
+                            unreadCount: isCurrentRoom ? 0 : (conv.unreadCount + 1),
+                        };
+                    }
+                    return conv;
+                });
+            });
+        };
+
+        socket.on('receive_message', handleNewMessage);
+
+        return () => {
+            socket.off('receive_message', handleNewMessage);
+        };
+    }, [user, selectedRoomId]);
+
     if (!user) {
         return (
             <div className="flex-1 flex items-center justify-center">
@@ -171,21 +225,19 @@ const ChatList = ({ selectedRoomId, onSelectRoom }) => {
                         return (
                             <li
                                 key={conversation.id}
-                                className={`cursor-pointer px-4 py-3 flex items-start gap-3 transition-colors ${
-                                    isActive
+                                className={`cursor-pointer px-4 py-3 flex items-start gap-3 transition-colors ${isActive
                                         ? isDarkMode
                                             ? 'bg-gray-800'
                                             : 'bg-green-50'
                                         : isDarkMode
                                             ? 'hover:bg-gray-900'
                                             : 'hover:bg-gray-50'
-                                }`}
+                                    }`}
                                 onClick={() => onSelectRoom?.(conversation.id)}
                             >
                                 <div
-                                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
-                                        isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-green-100 text-green-700'
-                                    }`}
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-green-100 text-green-700'
+                                        }`}
                                 >
                                     {conversation.name?.charAt(0)?.toUpperCase() || '?'}
                                 </div>
@@ -193,9 +245,8 @@ const ChatList = ({ selectedRoomId, onSelectRoom }) => {
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2">
                                         <p
-                                            className={`text-sm font-semibold truncate ${
-                                                isDarkMode ? 'text-white' : 'text-gray-900'
-                                            }`}
+                                            className={`text-sm font-semibold truncate ${isDarkMode ? 'text-white' : 'text-gray-900'
+                                                }`}
                                         >
                                             {conversation.name}
                                         </p>
@@ -204,15 +255,14 @@ const ChatList = ({ selectedRoomId, onSelectRoom }) => {
                                         </span>
                                     </div>
                                     <p
-                                        className={`mt-1 text-xs truncate ${
-                                            hasUnread
+                                        className={`mt-1 text-xs truncate ${hasUnread
                                                 ? isDarkMode
                                                     ? 'text-gray-100'
                                                     : 'text-gray-800'
                                                 : isDarkMode
                                                     ? 'text-gray-400'
                                                     : 'text-gray-600'
-                                        }`}
+                                            }`}
                                     >
                                         {lastMessagePreview}
                                     </p>
