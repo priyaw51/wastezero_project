@@ -3,17 +3,18 @@ const router = express.Router();
 const auth = require('../middlewares/auth');
 const authorizeRoles = require('../middlewares/role');
 const { validate, opportunitySchema } = require('../middlewares/validation');
+
 const {
-    createOpportunity,
-    getOpportunities,
-    getOpportunityById,
-    getMyOpportunities,
-    updateOpportunity,
-    deleteOpportunity,
-    applyToOpportunity,
-    getAppliedOpportunities,
-    getOpportunityApplicants,
-    searchOpportunities
+  createOpportunity,
+  getOpportunities,
+  getOpportunityById,
+  getMyOpportunities,
+  updateOpportunity,
+  deleteOpportunity,
+  applyToOpportunity,
+  getAppliedOpportunities,
+  getOpportunityApplicants,
+  searchOpportunities
 } = require('../controllers/opportunityController');
 
 // Protect all routes
@@ -21,61 +22,61 @@ router.use(auth);
 
 // Create Opportunity (NGO/Admin only)
 router.post(
-    '/',
-    authorizeRoles('ngo', 'admin'),
-    validate(opportunitySchema),
-    createOpportunity
+  '/',
+  authorizeRoles('ngo', 'admin'),
+  validate(opportunitySchema),
+  createOpportunity
 );
 
-// Get All Opportunities (Available to all authenticated users)
+// Get All Opportunities
 router.get('/', getOpportunities);
 
-// Get single opportunity by ID
-router.get('/:id', getOpportunityById);
-
-// Search Opportunities (All)
+// Search Opportunities (IMPORTANT: before /:id)
 router.get('/search', searchOpportunities);
 
-// Get Applied Opportunities (Volunteer only)
+// Get Applied Opportunities
 router.get(
-    '/applied',
-    authorizeRoles('volunteer'),
-    getAppliedOpportunities
+  '/applied',
+  authorizeRoles('volunteer'),
+  getAppliedOpportunities
 );
 
-// Get My Opportunities (NGO/Admin only)
+// Get My Opportunities
 router.get(
-    '/my',
-    authorizeRoles('ngo', 'admin'),
-    getMyOpportunities
+  '/my',
+  authorizeRoles('ngo', 'admin'),
+  getMyOpportunities
 );
 
-// Update Opportunity (NGO/Admin only)
+// Get single opportunity
+router.get('/:id', getOpportunityById);
+
+// Update Opportunity
 router.put(
-    '/:id',
-    authorizeRoles('ngo', 'admin'),
-    updateOpportunity
+  '/:id',
+  authorizeRoles('ngo', 'admin'),
+  updateOpportunity
 );
 
-// Delete Opportunity (NGO/Admin only)
+// Delete Opportunity
 router.delete(
-    '/:id',
-    authorizeRoles('ngo', 'admin'),
-    deleteOpportunity
+  '/:id',
+  authorizeRoles('ngo', 'admin'),
+  deleteOpportunity
 );
 
-// Apply for Opportunity (Volunteer only)
+// Apply for Opportunity
 router.post(
-    '/:id/apply',
-    authorizeRoles('volunteer'),
-    applyToOpportunity
+  '/:id/apply',
+  authorizeRoles('volunteer'),
+  applyToOpportunity
 );
 
-// Get Applicants for Opportunity (NGO/Admin only)
+// Get Applicants
 router.get(
-    '/:id/applicants',
-    authorizeRoles('ngo', 'admin'),
-    getOpportunityApplicants
+  '/:id/applicants',
+  authorizeRoles('ngo', 'admin'),
+  getOpportunityApplicants
 );
 
 module.exports = router;
