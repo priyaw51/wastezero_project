@@ -28,7 +28,7 @@ const Sidebar = () => {
         ...(user?.role === 'ngo' ? [{ name: 'Assigned Pickups', icon: <FaCalendarAlt />, path: '/assigned-pickups' }] : []),
         // Hide Opportunities from Admin
         ...(user?.role !== 'admin' ? [{ name: 'Opportunities', icon: <FaLightbulb />, path: '/opportunities' }] : []),
-        { name: 'Messages', icon: <FaEnvelope />, path: '/messages' },
+        { name: 'Messages', icon: <FaEnvelope />, path: '/chat' },
         { name: 'My Impact', icon: <FaChartLine />, path: '/impact' },
     ];
 
