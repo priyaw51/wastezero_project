@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaBell, FaInfoCircle, FaRegCheckCircle } from "react-icons/fa";
-import { useTheme } from "../../context/ThemeContext";
-import { useAuth } from "../../context/AuthContext";
-import { initiateSocketConnection } from "../../services/socketService";
+import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+import { initiateSocketConnection } from "../services/socketService";
 
 const NotificationBell = () => {
   const [open, setOpen] = useState(false);
@@ -79,8 +79,8 @@ const NotificationBell = () => {
       <button
         onClick={() => setOpen(!open)}
         className={`relative p-2 rounded-full transition-colors ${isDarkMode
-            ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
-            : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+          ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
+          : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
           }`}
       >
         <FaBell size={20} />
@@ -114,8 +114,8 @@ const NotificationBell = () => {
               <ul className="divide-y divide-gray-100 dark:divide-gray-700">
                 {notifications.map((n) => (
                   <li key={n._id} className={`p-4 transition-colors relative group ${!n.isRead
-                      ? isDarkMode ? 'bg-gray-800/50' : 'bg-green-50/50'
-                      : isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                    ? isDarkMode ? 'bg-gray-800/50' : 'bg-green-50/50'
+                    : isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
                     }`}>
                     <div className="flex items-start gap-3">
                       <div className={`mt-0.5 p-2 rounded-full shrink-0 ${isDarkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600'
