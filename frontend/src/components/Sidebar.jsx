@@ -13,7 +13,8 @@ import {
     FaQuestionCircle,
     FaShieldAlt,
     FaMoon,
-    FaSun
+    FaSun,
+    FaStar
 } from 'react-icons/fa';
 
 const Sidebar = () => {
@@ -22,8 +23,11 @@ const Sidebar = () => {
 
     const menuItems = [
         { name: 'Dashboard', icon: <FaThLarge />, path: '/dashboard' },
-        // Volunteers can schedule pickups
-        ...(user?.role === 'volunteer' ? [{ name: 'Schedule Pickup', icon: <FaCalendarAlt />, path: '/schedule-pickup' }] : []),
+        // Volunteers can schedule pickups and see matches
+        ...(user?.role === 'volunteer' ? [
+            { name: 'Schedule Pickup', icon: <FaCalendarAlt />, path: '/schedule-pickup' },
+            { name: 'My Matches', icon: <FaStar />, path: '/matches' }
+        ] : []),
         // NGOs see pickups assigned to them
         ...(user?.role === 'ngo' ? [{ name: 'Assigned Pickups', icon: <FaCalendarAlt />, path: '/assigned-pickups' }] : []),
         // Hide Opportunities from Admin

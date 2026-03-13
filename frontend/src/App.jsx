@@ -15,6 +15,7 @@ import OpportunityList from "./pages/Opportunities/OpportunityList";
 import OpportunityForm from "./pages/Opportunities/OpportunityForm";
 import OpportunityDetail from "./pages/Opportunities/OpportunityDetail";
 import SchedulePickup from "./pages/Pickups/SchedulePickup";
+import MatchDashboard from "./pages/Matches/MatchDashboard";
 import ChatLayout from "./pages/Chat/ChatLayout";
 
 function App() {
@@ -44,6 +45,9 @@ function App() {
               {/* Chat Routes */}
               <Route path="/chat" element={<ChatLayout />} />
               <Route path="/chat/:roomId" element={<ChatLayout />} />
+
+              {/* Match Dashboard Route */}
+              <Route path="/matches" element={<MatchDashboard />} />
             </Route>
 
             {/* Example of Role-Based Route (Future usage) */}
