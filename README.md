@@ -155,10 +155,19 @@ The frontend is a modern, responsive Single Page Application (SPA).
 ## 🤝 Contribution Guide
 We use a structured branching strategy to keep the codebase clean.
 
+### 🛠 Development Workflow
 1.  **Pull latest changes**: `git pull origin pawnesh-dev`
-2.  **Stay Decoupled**: Work on your respective branch. If you need a backend endpoint that doesn't exist yet, use mock data until the backend is merged.
-3.  **Clean Code**: Maintain the established architectural patterns (Controllers/Services).
-4.  **Audit**: Run the app locally and check the console for errors before pushing.
+2.  **Create a new branch**: `git checkout -b feature-name`
+3.  **Commit your changes**: `git commit -m "Add feature/fix description"`
+4.  **Push to GitHub**: `git push origin feature-name`
+5.  **Create a Pull Request (PR)**: Submit for review on GitHub.
+
+*(Note: 'feature-name' should be replaced with your actual branch name)*
+
+### 💡 Best Practices
+*   **Stay Decoupled**: Work on your respective branch. If you need a backend endpoint that doesn't exist yet, use mock data until the backend is merged.
+*   **Clean Code**: Maintain the established architectural patterns (Controllers/Services).
+*   **Audit**: Run the app locally and check the console for errors before pushing.
 
 ---
 *Developed for Milestone 4 - Reporting & Administration*
