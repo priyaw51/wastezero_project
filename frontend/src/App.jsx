@@ -16,6 +16,7 @@ import OpportunityForm from "./pages/Opportunities/OpportunityForm";
 import OpportunityDetail from "./pages/Opportunities/OpportunityDetail";
 import SchedulePickup from "./pages/Pickups/SchedulePickup";
 import MatchDashboard from "./pages/Matches/MatchDashboard";
+import VolunteerTasks from "./pages/Pickups/VolunteerTasks";
 import ChatLayout from "./pages/Chat/ChatLayout";
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
 
               {/* Pickup Routes */}
               <Route path="/schedule-pickup" element={<SchedulePickup />} />
+              <Route path="/tasks" element={<VolunteerTasks />} />
 
               {/* Chat Routes */}
               <Route path="/chat" element={<ChatLayout />} />
