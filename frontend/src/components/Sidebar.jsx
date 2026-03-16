@@ -25,8 +25,7 @@ const Sidebar = () => {
         { name: 'Dashboard', icon: <FaThLarge />, path: '/dashboard' },
         // Volunteers can schedule pickups
         ...(user?.role === 'volunteer' ? [
-            { name: 'Schedule Pickup', icon: <FaCalendarAlt />, path: '/schedule-pickup' },
-            { name: 'My Tasks', icon: <FaTruck />, path: '/tasks' }
+            { name: 'Schedule Pickup', icon: <FaCalendarAlt />, path: '/schedule-pickup' }
         ] : []),
         // NGOs see pickups assigned to them
         ...(user?.role === 'ngo' ? [] : []),

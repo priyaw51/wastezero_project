@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FaTruck, FaUserCheck, FaMapMarkerAlt, FaCalendarCheck, FaChevronRight, FaCheck, FaTimes, FaInbox, FaFilter, FaUsers } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { FaTruck, FaUserCheck, FaMapMarkerAlt, FaCalendarCheck, FaChevronRight, FaCheck, FaTimes, FaInbox, FaFilter, FaUsers, FaCommentDots } from 'react-icons/fa';
 import pickupService from '../../services/pickupService';
 import opportunityService from '../../services/opportunityService';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 const NgoDashboard = () => {
+    const navigate = useNavigate();
     const [pickups, setPickups] = useState([]);
     const [volunteers, setVolunteers] = useState([]);
     const [applications, setApplications] = useState([]);
@@ -12,6 +15,7 @@ const NgoDashboard = () => {
     const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'history'
     const [appFilter, setAppFilter] = useState('pending');
     const { isDarkMode } = useTheme();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadDashboardData();
@@ -55,6 +59,15 @@ const NgoDashboard = () => {
         } catch (err) {
             alert(err);
         }
+    };
+
+    const handleChat = (volunteer) => {
+        if (!volunteer?._id || !user?._id) {
+            console.error('Missing IDs:', { volunteerId: volunteer?._id, userId: user?._id });
+            return;
+        }
+        const roomId = [user._id, volunteer._id].sort().join('_');
+        navigate(`/chat/${roomId}`);
     };
 
     if (loading) return (
@@ -195,9 +208,25 @@ const NgoDashboard = () => {
                                         <div className="flex gap-2">
                                             {app.status === 'pending' && (
                                                 <>
+                                                    <button
+                                                        onClick={() => handleChat(app.volunteer_id)}
+                                                        title="Talk to Volunteer"
+                                                        className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-colors"
+                                                    >
+                                                        <FaCommentDots />
+                                                    </button>
                                                     <button onClick={() => handleStatusUpdate(app.opportunity_id?._id, app._id, 'accepted')} className="p-2 bg-green-100 hover:bg-green-200 text-green-600 rounded-lg transition-colors"><FaCheck /></button>
                                                     <button onClick={() => handleStatusUpdate(app.opportunity_id?._id, app._id, 'rejected')} className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors"><FaTimes /></button>
                                                 </>
+                                            )}
+                                            {app.status !== 'pending' && (
+                                                <button
+                                                    onClick={() => handleChat(app.volunteer_id)}
+                                                    title="Talk to Volunteer"
+                                                    className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-colors"
+                                                >
+                                                    <FaCommentDots />
+                                                </button>
                                             )}
                                         </div>
                                     </div>
@@ -216,13 +245,22 @@ const NgoDashboard = () => {
                                 <p className="text-sm text-gray-400 italic">No field agents available yet.</p>
                             ) : (
                                 volunteers.map((vol) => (
-                                    <div key={vol._id} className="flex items-center gap-3">
+                                    <div key={vol._id} className="flex items-center gap-3 group">
                                         <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">{vol.name.charAt(0)}</div>
                                         <div className="flex-1">
-                                            <p className="text-sm font-bold dark:text-white">{vol.name}</p>
+                                            <p className="text-sm font-bold dark:text-white capitalize">{vol.name}</p>
                                             <p className="text-[10px] text-gray-400">{vol.email}</p>
                                         </div>
-                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => handleChat(vol)}
+                                                title="Chat with Team Member"
+                                                className="p-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                            >
+                                                <FaCommentDots size={14} />
+                                            </button>
+                                            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+                                        </div>
                                     </div>
                                 ))
                             )}
