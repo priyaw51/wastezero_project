@@ -26,6 +26,7 @@ async function start() {
   app.use('/api/notifications', require('./routes/notification'));
   app.use('/api/pickups', require('./routes/pickups'));
   app.use('/api/waste', require('./routes/waste'));
+  app.use('/api/admin', require('./routes/admin'));
 
   app.get('/', (req, res) => {
     res.send('WasteZero Backend is running');
