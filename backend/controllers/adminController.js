@@ -32,12 +32,43 @@ const suspendUser = async (req, res) => {
         await user.save();
 
         await AdminLog.create({
-            admin_id: req.user?.id || userId, // fallback if auth not ready
+            admin_id: req.user.id,
             action: "SUSPEND_USER",
             target_id: userId,
         });
 
         res.json({ message: "User suspended successfully", user });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// @desc    Unsuspend user
+const unsuspendUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.status === "active") {
+            return res.status(400).json({ message: "User is already active" });
+        }
+
+        user.status = "active";
+        await user.save();
+
+        await AdminLog.create({
+            admin_id: req.user.id,
+            action: "UNSUSPEND_USER",
+            target_id: userId,
+        });
+
+        res.json({ message: "User unsuspended successfully", user });
 
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -74,4 +105,4 @@ const downloadLogs = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, suspendUser, getLogs, downloadLogs };
+module.exports = { getUsers, suspendUser, unsuspendUser, getLogs, downloadLogs };
