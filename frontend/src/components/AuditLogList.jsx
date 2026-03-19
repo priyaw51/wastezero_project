@@ -74,4 +74,3 @@ const AuditLogList = ({ logs = [] }) => {
 };
 
 export default AuditLogList;
-

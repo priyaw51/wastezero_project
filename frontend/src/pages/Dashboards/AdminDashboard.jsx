@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import opportunityService from '../../services/opportunityService';
-import { exportRowsToCsv } from '../../services/csvExportService';
 
 const AdminDashboard = () => {
     const [opportunities, setOpportunities] = useState([]);
@@ -35,44 +34,9 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleDownloadOpportunities = () => {
-        exportRowsToCsv({
-            filename: 'opportunities-report.csv',
-            rows: opportunities,
-            columns: [
-                { key: '_id', label: 'ID' },
-                { key: 'title', label: 'Title' },
-                { key: 'status', label: 'Status' },
-                { key: 'address', label: 'Address' },
-                { key: 'createdAt', label: 'Created At' }
-            ]
-        });
-    };
-
     return (
         <div className="p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-                <div className="flex gap-2">
-                    <Link
-                        to="/admin/reports"
-                        className="inline-flex items-center px-4 py-2 rounded-lg font-semibold bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                    >
-                        Reports
-                    </Link>
-                    <button
-                        onClick={handleDownloadOpportunities}
-                        disabled={loading || opportunities.length === 0}
-                        className={`inline-flex items-center px-4 py-2 rounded-lg font-semibold transition-colors ${
-                            loading || opportunities.length === 0
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'
-                                : 'bg-green-600 text-white hover:bg-green-700'
-                        }`}
-                    >
-                        Download Report
-                    </button>
-                </div>
-            </div>
+            <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
             {/* Top Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -94,17 +58,6 @@ const AdminDashboard = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-none dark:border dark:border-gray-700 overflow-hidden">
                 <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white">Manage Opportunities</h2>
-                    <button
-                        onClick={handleDownloadOpportunities}
-                        disabled={loading || opportunities.length === 0}
-                        className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                            loading || opportunities.length === 0
-                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
-                                : 'bg-green-600 text-white hover:bg-green-700'
-                        }`}
-                    >
-                        Download Report
-                    </button>
                 </div>
 
                 <div className="p-4">

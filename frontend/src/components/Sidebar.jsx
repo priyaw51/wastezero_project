@@ -32,7 +32,6 @@ const Sidebar = () => {
         // Hide Opportunities from Admin
         ...(user?.role !== 'admin' ? [{ name: 'Opportunities', icon: <FaLightbulb />, path: '/opportunities' }] : []),
         { name: 'Messages', icon: <FaEnvelope />, path: '/chat' },
-        ...(user?.role === 'admin' ? [{ name: 'Reports', icon: <FaChartLine />, path: '/admin/reports' }] : []),
         { name: 'My Impact', icon: <FaChartLine />, path: '/impact' },
     ];
 

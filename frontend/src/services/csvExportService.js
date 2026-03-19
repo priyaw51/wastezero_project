@@ -36,4 +36,3 @@ export function exportRowsToCsv({ filename, rows, columns }) {
     const csv = buildCsv(rows, columns);
     downloadCsv(filename, csv);
 }
-
