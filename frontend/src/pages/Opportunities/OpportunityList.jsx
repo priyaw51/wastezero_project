@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+import { FaCommentDots } from 'react-icons/fa';
+>>>>>>> eaa806068fdff2f2c8b837cf0a8f99347969326a
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import opportunityService from '../../services/opportunityService';
@@ -80,6 +84,14 @@ const OpportunityList = () => {
                 alert(err.message || 'Failed to delete opportunity');
             }
         }
+    };
+
+    const handleChatWithNGO = (ngoData) => {
+        if (!user || !ngoData) return;
+        // ngoData could be an object if populated, or string ID
+        const ngoId = ngoData._id || ngoData;
+        const roomId = [user._id, ngoId].sort().join('_');
+        navigate(`/chat/${roomId}`);
     };
 
     const filteredOpportunities = opportunities.filter(opp => {
@@ -201,22 +213,7 @@ const OpportunityList = () => {
                                                     <h2 className={`text-xl font-bold line-clamp-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                                         {opportunity.title}
                                                     </h2>
-                                                    {(user?.role === 'ngo' || user?.role === 'admin') && (opportunity.ngo_id === user?.id || user?.role === 'admin') && (
-                                                        <div className="flex gap-3 mt-1">
-                                                            <Link
-                                                                to={`/opportunities/edit/${opportunity._id}`}
-                                                                className="text-xs font-semibold text-blue-500 hover:text-blue-600 transition-colors"
-                                                            >
-                                                                Edit
-                                                            </Link>
-                                                            <button
-                                                                onClick={() => handleDelete(opportunity._id)}
-                                                                className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </div>
-                                                    )}
+
                                                 </div>
                                                 <span
                                                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap ml-2 ${opportunity.status === 'open'
@@ -272,6 +269,7 @@ const OpportunityList = () => {
                                             </div>
                                         </div>
 
+<<<<<<< HEAD
                                         {/* Footer - Apply & Chat */}
                                         <div className={`px-6 py-4 border-t ${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-100'}`}>
                                             {user?.role === 'volunteer' ? (
@@ -372,6 +370,16 @@ const OpportunityList = () => {
                                                     Login to Apply
                                                 </a>
                                             )}
+=======
+                                        {/* Footer - View Details Button */}
+                                        <div className={`px-6 py-4 border-t ${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-100'}`}>
+                                            <Link
+                                                to={`/opportunities/${opportunity._id}`}
+                                                className="block w-full py-2.5 px-4 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700 text-center transition-colors text-sm"
+                                            >
+                                                View Details
+                                            </Link>
+>>>>>>> eaa806068fdff2f2c8b837cf0a8f99347969326a
                                         </div>
                                     </div>
                                 ))}
