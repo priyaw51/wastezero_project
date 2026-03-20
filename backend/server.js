@@ -1,9 +1,6 @@
 // load environment variables
 require('dotenv').config();
 
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
-
 const db = require('./config/db');
 const express = require('express');
 const http = require('http');
@@ -14,8 +11,7 @@ async function start() {
   await db.connect();
 
   const app = express();
-  // const port = process.env.PORT || 3000;
-  const port = process.env.PORT || 5000;
+  const port = process.env.PORT || 3000;
 
   // CORS for REST endpoints
   app.use(require('cors')());
@@ -56,14 +52,11 @@ async function start() {
   app.set('onlineUsers', onlineUsers);
 
   // Start the HTTP server
-  // server.listen(port, () => {
-  //   console.log(`Server running on port ${port}`);
-  //   console.log(`Socket.io ready`);
-  // });
-
-  server.listen(port, '0.0.0.0', () => {
+  server.listen(port, () => {
     console.log(`Server running on port ${port}`);
+    console.log(`Socket.io ready`);
   });
+
 }
 
 start().catch(err => {
