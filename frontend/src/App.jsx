@@ -34,7 +34,6 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/admin-panel" element={<AdminPanel />} />
 
               {/* Opportunity Routes */}
               <Route path="/opportunities" element={<OpportunityList />} />
@@ -52,14 +51,10 @@ function App() {
 
               {/* Match Dashboard Route */}
               <Route path="/matches" element={<MatchDashboard />} />
-            </Route>
 
-            {/* Example of Role-Based Route (Future usage) */}
-            {/*
-            <Route element={<ProtectedRoute roles={['admin']} />}>
-                <Route path="/admin" element={<AdminPanel />} />
+              {/* Admin Panel Route */}
+              <Route path="/admin-panel" element={<AdminPanel />} />
             </Route>
-            */}
           </Routes>
         </AuthProvider>
       </ThemeProvider>

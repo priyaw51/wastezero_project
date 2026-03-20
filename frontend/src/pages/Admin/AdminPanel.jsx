@@ -7,75 +7,53 @@ import Navbar from "../../components/Navbar";
 const AdminPanel = () => {
     const { isDarkMode } = useTheme();
     const [searchTerm, setSearchTerm] = useState("");
-    const [stats, setStats] = useState({
-        total: 0,
-        active: 0,
-        suspended: 0
-    });
+    const [stats, setStats] = useState({ total: 0, active: 0, suspended: 0 });
 
     return (
-        <div className="flex h-screen">
-            {/* Sidebar */}
+        <div className={`flex h-screen ${isDarkMode ? "bg-[#0f172a] text-white" : "bg-gray-100 text-gray-900"}`}>
             <Sidebar />
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col">
-
-                {/* Top Bar */}
-                <div className={`h-16 flex items-center px-6 border-b ${isDarkMode ? "bg-[#1e293b] border-gray-700" : "bg-white border-gray-200"
-                    }`}>
-                    <input
-                        type="text"
-                        placeholder="Search users..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className={`w-full max-w-md px-4 py-2 rounded-md border text-sm focus:outline-none
-    ${isDarkMode
-                                ? "bg-[#0f172a] border-gray-600 text-white placeholder-gray-400"
-                                : "bg-white border-gray-300 text-gray-800 placeholder-gray-500"
-                            }`}
-                    />
-                </div>
-
-                {/* <Navbar /> */}
+            <div className="flex flex-col flex-1 overflow-hidden">
+                <Navbar />
 
                 {/* Content */}
-                <div className={`p-6 min-h-screen 
-${isDarkMode ? "bg-[#0f172a] text-white" : "bg-gray-100 text-gray-900"}`}>
+                <div className="p-6 flex-1 overflow-y-auto">
+                    <h1 className="text-2xl font-bold mb-6">Admin Control Panel</h1>
 
-                    <h1 className="text-2xl font-bold mb-6">
-                        Admin Control Panel
-                    </h1>
-
-                    {/* Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-                        <div className={`p-4 rounded-xl shadow 
-        ${isDarkMode ? "bg-[#1e293b]" : "bg-white"}`}>
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div className={`p-4 rounded-xl shadow ${isDarkMode ? "bg-[#1e293b]" : "bg-white"}`}>
                             <p className="text-gray-400 text-sm">Total Users</p>
-                            <h2 className="text-2xl font-bold">{stats.total}</h2>
+                            <h2 className="text-green-400 text-2xl font-bold">{stats.total}</h2>
                         </div>
-
-                        <div className={`p-4 rounded-xl shadow 
-        ${isDarkMode ? "bg-[#1e293b]" : "bg-white"}`}>
-                            <p className="text-gray-400 text-sm">Active Users</p>
-                            <h2 className="text-green-400 text-2xl font-bold">{stats.active}</h2>
+                        <div className={`p-4 rounded-xl shadow ${isDarkMode ? "bg-[#1e293b]" : "bg-white"}`}>
+                            <p className="text-gray-400 text-sm">Active</p>
+                            <h2 className="text-blue-400 text-2xl font-bold">{stats.active}</h2>
                         </div>
-
-                        <div className={`p-4 rounded-xl shadow 
-        ${isDarkMode ? "bg-[#1e293b]" : "bg-white"}`}>
+                        <div className={`p-4 rounded-xl shadow ${isDarkMode ? "bg-[#1e293b]" : "bg-white"}`}>
                             <p className="text-gray-400 text-sm">Suspended</p>
                             <h2 className="text-red-400 text-2xl font-bold">{stats.suspended}</h2>
                         </div>
-
                     </div>
 
-                    {/* Table */}
-                    <div className={`p-4 mt-6 rounded-xl ${isDarkMode ? "bg-[#1e293b]" : "bg-white shadow"
-                        }`}>
+                    {/* Search Bar */}
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search users by name or email..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={`w-full max-w-md px-4 py-2 rounded-md border text-sm ${isDarkMode
+                                    ? "bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+                                    : "bg-white border-gray-300 text-gray-800 placeholder-gray-400"
+                                }`}
+                        />
+                    </div>
+
+                    {/* User Management Table */}
+                    <div className={`p-4 mt-2 rounded-xl shadow ${isDarkMode ? "bg-[#1e293b]" : "bg-white"}`}>
                         <UserManagementTable setStats={setStats} searchTerm={searchTerm} />
                     </div>
-
                 </div>
             </div>
         </div>
