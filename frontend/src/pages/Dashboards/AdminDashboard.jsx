@@ -57,15 +57,34 @@ const AdminDashboard = () => {
     }, []);
 
 
-    const downloadWasteReport = () => {
-        exportRowsToCsv({
-            filename: 'waste-impact-report.csv',
-            rows: trendData,
-            columns: [
-                { key: 'name', label: 'Month' },
-                { key: 'totalWeight', label: 'Total Weight (kg)' }
-            ]
-        });
+    const downloadWasteReport = async () => {
+        try {
+            const detailedRecords = await wasteService.getDetailedReport();
+            
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            
+            const reportRows = detailedRecords.map(r => ({
+                month: monthNames[new Date(r.date).getMonth()],
+                category: r.category,
+                weight: r.weight,
+                donor: r.user_id?.name || 'Anonymous',
+                agent: r.pickup_id?.agent_id?.name || 'System Auto'
+            }));
+
+            exportRowsToCsv({
+                filename: `waste-impact-detailed-${new Date().toISOString().split('T')[0]}.csv`,
+                rows: reportRows,
+                columns: [
+                    { key: 'month', label: 'Month' },
+                    { key: 'category', label: 'Waste Category' },
+                    { key: 'weight', label: 'Weight (kg)' },
+                    { key: 'donor', label: 'Donated By' },
+                    { key: 'agent', label: 'Managed By Agency/NGO' }
+                ]
+            });
+        } catch (err) {
+            alert('Failed to generate detailed report: ' + err);
+        }
     };
 
     if (loading) return (

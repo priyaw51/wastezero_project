@@ -3,7 +3,8 @@ const router = express.Router();
 const {
     getStatsByCategory,
     getWasteTrends,
-    addWasteEntry
+    addWasteEntry,
+    getDetailedWasteReport
 } = require('../controllers/wasteController');
 const auth = require('../middlewares/auth');
 const authorizeRoles = require('../middlewares/role');
@@ -17,5 +18,6 @@ router.route('/')
 
 router.get('/stats/category', getStatsByCategory);
 router.get('/stats/trends', getWasteTrends);
+router.get('/details', getDetailedWasteReport);
 
 module.exports = router;

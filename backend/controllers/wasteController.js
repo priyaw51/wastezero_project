@@ -11,13 +11,6 @@ exports.getStatsByCategory = async (req, res) => {
                     _id: "$category",
                     totalWeight: { $sum: "$weight" }
                 }
-            },
-            {
-                $project: {
-                    category: "$_id",
-                    totalWeight: 1,
-                    _id: 0
-                }
             }
         ]);
 
@@ -101,6 +94,34 @@ exports.addWasteEntry = async (req, res) => {
         });
     } catch (err) {
         res.status(400).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+// @desc    Get all detailed waste records including NGO/Agent info
+// @route   GET /api/waste/details
+// @access  Private/Admin
+exports.getDetailedWasteReport = async (req, res) => {
+    try {
+        const stats = await WasteStats.find()
+            .populate('user_id', 'name email role')
+            .populate({
+                path: 'pickup_id',
+                populate: {
+                    path: 'agent_id',
+                    select: 'name email role'
+                }
+            })
+            .sort({ date: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: stats
+        });
+    } catch (err) {
+        res.status(500).json({
             success: false,
             message: err.message
         });
