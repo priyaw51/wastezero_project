@@ -3,17 +3,18 @@ services:
   - type: web
     name: wastezero-backend
     env: node
+    plan: free # Explicitly set to free
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:
-      - key: DATABASE_URL # Set your MongoDB Atlas URI in Render dashboard
+      - key: DATABASE_URL 
         sync: false
-      - key: JWT_SECRET # Set your secret in Render dashboard
+      - key: JWT_SECRET 
         sync: false
       - key: NODE_ENV
         value: production
-      - key: FRONTEND_URL # Set this to your frontend URL after deployment
+      - key: FRONTEND_URL 
         sync: false
       - key: EMAIL_USER 
         sync: false
@@ -25,7 +26,7 @@ services:
   # Frontend Static Site
   - type: web
     name: wastezero-frontend
-    runtime: static
+    runtime: static # This designates a Static Site on Render
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
@@ -34,5 +35,5 @@ services:
         source: /*
         destination: /index.html
     envVars:
-      - key: VITE_API_URL # Set this to your backend URL after deployment
+      - key: VITE_API_URL 
         sync: false
