@@ -22,9 +22,7 @@ services:
         sync: false
       - key: ADMIN_SECURITY_CODE 
         sync: false
-      - key: RESEND_API # Resend email service API key (deprecated - kept for reference)
-        sync: false
-      - key: BREVO_API_KEY # Brevo transactional email API key
+      - key: SENDGRID_API_KEY # SendGrid transactional email API key
         sync: false
 
   # Frontend Static Site
