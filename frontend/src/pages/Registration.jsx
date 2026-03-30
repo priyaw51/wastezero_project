@@ -262,21 +262,23 @@ function Register() {
               </div>
             )}
 
-            <div className="group">
-              <label className="block text-[10px] font-bold font-manrope uppercase tracking-widest text-secondary mb-1.5 ml-1">Skills</label>
-              <div className="relative">
-                <FaBriefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-mint transition-colors text-xs" />
-                <input
-                  type="text"
-                  name="skills"
-                  placeholder="e.g. Recycling, Logistics, Teaching"
-                  value={formData.skills}
-                  onChange={handleChange}
-                  disabled={isFormDisabled}
-                  className="w-full pl-10 pr-4 py-3 input-glass rounded-xl transition-all font-inter text-sm"
-                />
+            {formData.role !== "admin" && (
+              <div className="group">
+                <label className="block text-[10px] font-bold font-manrope uppercase tracking-widest text-secondary mb-1.5 ml-1">Skills</label>
+                <div className="relative">
+                  <FaBriefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-mint transition-colors text-xs" />
+                  <input
+                    type="text"
+                    name="skills"
+                    placeholder="e.g. Recycling, Logistics, Teaching"
+                    value={formData.skills}
+                    onChange={handleChange}
+                    disabled={isFormDisabled}
+                    className="w-full pl-10 pr-4 py-3 input-glass rounded-xl transition-all font-inter text-sm"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="group">
               <label className="block text-[10px] font-bold font-manrope uppercase tracking-widest text-secondary mb-1.5 ml-1">Bio</label>
