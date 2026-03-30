@@ -22,6 +22,8 @@ services:
         sync: false
       - key: ADMIN_SECURITY_CODE 
         sync: false
+      - key: RESEND_API # Resend email service API key
+        sync: false
 
   # Frontend Static Site
   - type: web
