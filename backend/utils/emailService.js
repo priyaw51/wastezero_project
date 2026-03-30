@@ -1,18 +1,18 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: '74.125.143.108', // Static IPv4 for Gmail SMTP
     port: 465,
-    secure: true, // Use SSL for port 465
+    secure: true, 
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     tls: {
+                servername: 'smtp.gmail.com', // Necessary for SSL handshake with the IP
         rejectUnauthorized: false
     },
-    family: 4, // Keep IPv4 fix
-    connectionTimeout: 15000, // 15 seconds
+    connectionTimeout: 15000,
 });
 
 async function sendVerificationEmail(email, otp, subject) {
