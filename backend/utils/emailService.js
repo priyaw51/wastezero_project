@@ -1,53 +1,61 @@
-const dns = require('dns');
-// CRITICAL: Force IPv4 DNS resolution globally.
-// Render free tier has broken IPv6, so without this,
-// smtp.gmail.com resolves to an IPv6 address (ENETUNREACH error).
-dns.setDefaultResultOrder('ipv4first');
-
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+// ✅ PRODUCTION EMAIL SERVICE — Brevo (HTTP API, port 443, works on Render Free tier)
+// Brevo replaces Nodemailer SMTP which is blocked on Render's free plan.
+// Uses Node 18+ built-in fetch — no extra packages needed.
+// Sign up at https://app.brevo.com → Settings → API Keys to get your key.
+// Verify your sender email at: Senders & Domains → Add a Sender.
 
 async function sendVerificationEmail(email, otp, subject) {
-    const mailOptions = {
-        from: `WasteZero <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: subject,
-        text: `Your OTP verification code is: ${otp}. This code is valid for 10 minutes.`
-    };
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${email}`);
-    } catch (error) {
-        console.error("Nodemailer Error Details:", error.message, error.stack);
-        throw new Error("Email could not be sent: " + error.message);
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'api-key': process.env.BREVO_API_KEY,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            sender: {
+                name: 'WasteZero',
+                email: process.env.EMAIL_USER // Must be verified as a sender in Brevo dashboard
+            },
+            to: [{ email }],
+            subject: subject,
+            textContent: `Your OTP verification code is: ${otp}. This code is valid for 10 minutes.`
+        })
+    });
+
+    if (!response.ok) {
+        const err = await response.json();
+        console.error('Brevo Error Details:', JSON.stringify(err));
+        throw new Error('Email could not be sent: ' + (err.message || response.statusText));
     }
+
+    const data = await response.json();
+    console.log(`Email sent to ${email}, messageId: ${data.messageId}`);
 }
 
 module.exports = sendVerificationEmail;
 
 
 // -----------------------------------------------------------------------
-// RESEND CODE (Commented out - caused '404 User not found' issue)
+// OLD NODEMAILER CODE (Commented out)
+// Gmail SMTP is BLOCKED on Render Free tier (ports 465/587 are firewalled).
+// dns.setDefaultResultOrder('ipv4first') also did not resolve it.
 // -----------------------------------------------------------------------
-// const { Resend } = require('resend');
-// const resend = new Resend(process.env.RESEND_API);
-// async function sendVerificationEmail(email, otp, subject) {
-//     const { data, error } = await resend.emails.send({
-//         from: 'WasteZero <onboarding@resend.dev>',
-//         to: [email],
-//         subject: subject,
-//         text: `Your OTP is: ${otp}. Valid for 10 minutes.`,
-//     });
-//     if (error) {
-//         console.error('Resend Error Details:', error);
-//         throw new Error('Email could not be sent: ' + error.message);
+// const dns = require('dns');
+// dns.setDefaultResultOrder('ipv4first');
+// const nodemailer = require('nodemailer');
+// const transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS
 //     }
-//     console.log(`Email sent to ${email}, ID: ${data.id}`);
+// });
+// async function sendVerificationEmail(email, otp, subject) {
+//     await transporter.sendMail({
+//         from: `WasteZero <${process.env.EMAIL_USER}>`,
+//         to: email,
+//         subject: subject,
+//         text: `Your OTP is: ${otp}. Valid for 10 minutes.`
+//     });
+//     console.log(`Email sent to ${email}`);
 // }
