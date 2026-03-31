@@ -47,8 +47,14 @@ const SchedulePickup = () => {
         }));
 
         try {
+            // Nominatim requires a User-Agent or it might block request
             const response = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+                {
+                    headers: {
+                        'User-Agent': 'WasteZero-App'
+                    }
+                }
             );
             const data = await response.json();
             if (data && data.display_name) {

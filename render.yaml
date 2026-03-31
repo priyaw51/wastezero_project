@@ -1,0 +1,41 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: wastezero-backend
+    env: node
+    plan: free # Explicitly set to free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL 
+        sync: false
+      - key: JWT_SECRET 
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL 
+        sync: false
+      - key: EMAIL_USER 
+        sync: false
+      - key: EMAIL_PASS 
+        sync: false
+      - key: ADMIN_SECURITY_CODE 
+        sync: false
+      - key: SENDGRID_API_KEY # SendGrid transactional email API key
+        sync: false
+
+  # Frontend Static Site
+  - type: web
+    name: wastezero-frontend
+    runtime: static # This designates a Static Site on Render
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL 
+        sync: false

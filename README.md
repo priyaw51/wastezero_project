@@ -58,9 +58,12 @@ The backend manages authentication, automated OTPs, and the core recycling logic
     DATABASE_URL=mongodb://127.0.0.1:27017/watezero
     JWT_SECRET=your_jwt_secret_key
     
-    # Email Configuration (Nodemailer)
-    EMAIL_USER=your_email@gmail.com
-    EMAIL_PASS=your_app_specific_password
+    # Email Configuration (SendGrid - Production)
+    EMAIL_USER=your_verified_sender@email.com
+    SENDGRID_API_KEY=your_sendgrid_api_key
+
+    # Email Fallback (Nodemailer - Local)
+    EMAIL_PASS=your_gmail_app_password
 
     # Admin Registration Security
     ADMIN_SECURITY_CODE=your_secret_admin_code
@@ -98,9 +101,10 @@ The frontend is a modern, responsive Single Page Application (SPA).
 *   **Role-Based Access Control**: Separate interfaces for Users, NGOs, and Admins.
 *   **Waste Pickups**: Schedule and track waste collections in real-time.
 *   **NGO Opportunities**: Browse and participate in recycling/waste management initiatives.
-*   **Interactive Maps**: Pinpoint pickup locations accurately using OpenStreetMap.
+*   **Interactive Maps**: High-performance Leaflet maps with Nominatim reverse-geocoding for instant address auto-fill.
 *   **Admin Dashboard**: Real-time waste analytics and trend visualization using Recharts.
-*   **OTP Authentication**: Secure login and registration via email verification.
+*   **Production Email System**: Reliable OTP delivery via SendGrid's HTTP API (bypassing SMTP firewalls).
+*   **Presentation Mode**: Built-in master key for seamless live demonstrations.
 *   **Smart Matching**: Connects users to nearby NGO opportunities based on location.
 
 ---
@@ -139,16 +143,18 @@ The frontend is a modern, responsive Single Page Application (SPA).
 *   Ensure your MongoDB service is running (`services.msc` on Windows).
 *   Verify the `DATABASE_URL` in `.env`.
 
-**2. OTP Not Sending**
-*   If using Gmail, ensure you have generated an **App Password**. Regular passwords will not work.
-*   Check if `EMAIL_USER` is correct.
+**2. OTP Not Sending / Delayed**
+*   **Production (SendGrid)**: Check your SendGrid Activity log. If the status is "Deferred," your recipient's provider (like Gmail) is rate-limiting the email. Ensure your `EMAIL_USER` matches your verified "Single Sender" in SendGrid.
+*   **Local (Nodemailer)**: Ensure you have an **App Password**. Regular Gmail passwords will not work.
+*   **Presentation Hack**: For zero-delay testing/demos, use the **Master OTP: `123456`**.
 
 **3. Port 3000 Already in Use**
 *   On Windows: `netstat -ano | findstr :3000` -> `taskkill /F /PID <pid>`.
 *   Or change the `PORT` in `.env`.
 
-**4. Map Not Appearing**
-*   The Map requires a parent container with a defined height. If you are creating new pages, ensure the Leaflet container has style prop `height`.
+**4. Map Tiles Not Loading**
+*   If the map appears as a grey box, ensure the container has a fixed height (e.g., `h-[400px]`).
+*   We use `map.invalidateSize()` on render to fix common Leaflet tiling issues in dynamic layouts.
 
 ---
 

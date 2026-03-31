@@ -248,36 +248,38 @@ const Profile = () => {
                                         </div>
 
                                         {/* Skills — editable tag input */}
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">Skills</label>
-                                            <div className={`w-full rounded-lg border p-3 min-h-[48px] flex flex-wrap gap-2 items-center focus-within:ring-2 focus-within:ring-green-500 transition-all ${isDarkMode ? "bg-gray-700 border-gray-600" : "bg-gray-50 border-gray-200"
-                                                }`}>
-                                                {formData.skills.map((skill) => (
-                                                    <span
-                                                        key={skill}
-                                                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
-                                                    >
-                                                        {skill}
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeSkill(skill)}
-                                                            className="hover:text-red-500 transition-colors font-bold leading-none"
+                                        {user.role !== "admin" && (
+                                            <div>
+                                                <label className="block text-sm font-medium mb-2">Skills</label>
+                                                <div className={`w-full rounded-lg border p-3 min-h-[48px] flex flex-wrap gap-2 items-center focus-within:ring-2 focus-within:ring-green-500 transition-all ${isDarkMode ? "bg-gray-700 border-gray-600" : "bg-gray-50 border-gray-200"
+                                                    }`}>
+                                                    {formData.skills.map((skill) => (
+                                                        <span
+                                                            key={skill}
+                                                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800"
                                                         >
-                                                            &times;
-                                                        </button>
-                                                    </span>
-                                                ))}
-                                                <input
-                                                    type="text"
-                                                    value={skillInput}
-                                                    onChange={(e) => setSkillInput(e.target.value)}
-                                                    onKeyDown={handleAddSkill}
-                                                    placeholder={formData.skills.length === 0 ? "Type a skill and press Enter..." : "Add more..."}
-                                                    className="flex-1 min-w-[140px] bg-transparent outline-none text-sm placeholder-gray-400"
-                                                />
+                                                            {skill}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeSkill(skill)}
+                                                                className="hover:text-red-500 transition-colors font-bold leading-none"
+                                                            >
+                                                                &times;
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                    <input
+                                                        type="text"
+                                                        value={skillInput}
+                                                        onChange={(e) => setSkillInput(e.target.value)}
+                                                        onKeyDown={handleAddSkill}
+                                                        placeholder={formData.skills.length === 0 ? "Type a skill and press Enter..." : "Add more..."}
+                                                        className="flex-1 min-w-[140px] bg-transparent outline-none text-sm placeholder-gray-400"
+                                                    />
+                                                </div>
+                                                <p className="text-xs text-gray-500 mt-1">Press <kbd className="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-600 text-xs">Enter</kbd> to add a skill. Click &times; to remove.</p>
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-1">Press <kbd className="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-600 text-xs">Enter</kbd> to add a skill. Click &times; to remove.</p>
-                                        </div>
+                                        )}
 
                                         {/* Address + Map — editable with MapPicker */}
                                         <div>
