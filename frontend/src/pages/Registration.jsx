@@ -44,7 +44,14 @@ function Register() {
     }));
 
     try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+        {
+          headers: {
+            'User-Agent': 'WasteZero-App'
+          }
+        }
+      );
       const data = await response.json();
       if (data && data.display_name) {
         setFormData(prev => ({ ...prev, address: data.display_name }));
