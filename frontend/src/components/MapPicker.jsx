@@ -29,15 +29,25 @@ function LocationMarker({ position, setPosition, onLocationSelect }) {
 // Component to recenter map and fix tiling issues
 function RecenterMap({ center }) {
     const map = useMap();
+    
     useEffect(() => {
+        const fixMap = () => {
+             map.invalidateSize();
+        };
+
+        // Run immediately on mount
+        setTimeout(fixMap, 200);
+
+        // Also run when center changes
         if (center) {
             map.setView(center);
-            // invalidateSize is critical for fixing "grey map" inside dynamic containers
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 100);
+            setTimeout(fixMap, 100);
         }
+
+        window.addEventListener('resize', fixMap);
+        return () => window.removeEventListener('resize', fixMap);
     }, [center, map]);
+
     return null;
 }
 
@@ -66,7 +76,7 @@ function MapPicker({ onLocationSelect, initialLat, initialLng }) {
             <MapContainer center={center} zoom={13} style={{ height: "100%", width: "100%" }}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <RecenterMap center={center} />
                 <LocationMarker
