@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import MapPicker from "../components/MapPicker";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { FaMapMarkerAlt, FaKeyboard } from "react-icons/fa";
+import { forwardGeocode } from "../services/geocodingService";
 
 const Profile = () => {
     const { user, setUser } = useAuth();
@@ -15,6 +16,7 @@ const Profile = () => {
     const [locationMode, setLocationMode] = useState("manual");
     const [skillInput, setSkillInput] = useState("");
     const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
+    const [isGeocoding, setIsGeocoding] = useState(false);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -96,20 +98,35 @@ const Profile = () => {
         e.preventDefault();
         setSaveStatus(null);
         try {
-            const token = localStorage.getItem("token");
             if (!user || !user._id) return;
+
+            let finalLocation = { ...formData.location };
+
+            // FORWARD GEOCODING: If address is manual and coordinates are empty
+            if (locationMode === "manual" && (finalLocation.coordinates[0] === 0) && formData.address) {
+                setIsGeocoding(true);
+                try {
+                    const coords = await forwardGeocode(formData.address);
+                    if (coords) {
+                        finalLocation.coordinates = [parseFloat(coords.lon), parseFloat(coords.lat)];
+                    }
+                } catch (error) {
+                    console.error("Geocoding failed during profile save:", error);
+                } finally {
+                    setIsGeocoding(false);
+                }
+            }
 
             const updateData = {
                 bio: formData.bio,
                 address: formData.address,
                 skills: formData.skills,
-                location: formData.location,
+                location: finalLocation,
             };
 
-            const response = await axios.put(
-                `http://localhost:3000/api/users/${user._id}`,
-                updateData,
-                { headers: { Authorization: `Bearer ${token}` } }
+            const response = await api.put(
+                `/users/${user._id}`,
+                updateData
             );
 
             const updatedUser = { ...user, ...response.data };
@@ -131,16 +148,14 @@ const Profile = () => {
                 setSaveStatus("mismatch");
                 return;
             }
-            const token = localStorage.getItem("token");
             if (!user || !user._id) return;
 
-            await axios.put(
-                `http://localhost:3000/api/users/${user._id}/password`,
+            await api.put(
+                `/users/${user._id}/password`,
                 {
                     currentPassword: passwordData.currentPassword,
                     newPassword: passwordData.newPassword,
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
+                }
             );
 
             setSaveStatus("success");
