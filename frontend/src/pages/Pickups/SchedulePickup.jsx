@@ -8,6 +8,8 @@ import api from '../../services/api';
 import VolunteerTasks from './VolunteerTasks';
 import { useAuth } from '../../context/AuthContext';
 
+import { forwardGeocode } from '../../services/geocodingService';
+
 const WASTE_CATEGORIES = [
     { value: 'plastic', label: '♻️ Plastic' },
     { value: 'organic', label: '🌿 Organic' },
@@ -76,7 +78,25 @@ const SchedulePickup = () => {
 
         try {
             setLoading(true);
-            const response = await api.post('/pickups', formData);
+
+            let submissionPayload = { ...formData };
+
+            // FORWARD GEOCODING: If user typed an address but didn't pin it on the map
+            if (formData.location.coordinates[0] === 0 && formData.address) {
+                try {
+                    const coords = await forwardGeocode(formData.address);
+                    if (coords) {
+                        submissionPayload.location = {
+                            type: 'Point',
+                            coordinates: [parseFloat(coords.lon), parseFloat(coords.lat)]
+                        };
+                    }
+                } catch (err) {
+                    console.error("Geocoding failed during pickup schedule:", err);
+                }
+            }
+
+            const response = await api.post('/pickups', submissionPayload);
             setSuccess(response.data.message || 'Pickup scheduled successfully!');
             setTimeout(() => navigate('/dashboard'), 2000);
         } catch (err) {

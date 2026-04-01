@@ -7,6 +7,8 @@ import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
 import MapPicker from '../../components/MapPicker';
 
+import { forwardGeocode } from '../../services/geocodingService';
+
 const OpportunityForm = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -113,10 +115,27 @@ const OpportunityForm = () => {
         setError(null);
 
         try {
+            let submissionPayload = { ...formData };
+
+            // FORWARD GEOCODING: If address is manual or map pin is default but address exists
+            if (formData.location.coordinates[0] === 0 && formData.address) {
+                try {
+                    const coords = await forwardGeocode(formData.address);
+                    if (coords) {
+                        submissionPayload.location = {
+                            type: 'Point',
+                            coordinates: [parseFloat(coords.lon), parseFloat(coords.lat)]
+                        };
+                    }
+                } catch (err) {
+                    console.error("Geocoding failed during opportunity submission:", err);
+                }
+            }
+
             if (isEditMode) {
-                await opportunityService.updateOpportunity(id, formData);
+                await opportunityService.updateOpportunity(id, submissionPayload);
             } else {
-                await opportunityService.createOpportunity(formData);
+                await opportunityService.createOpportunity(submissionPayload);
             }
             navigate('/opportunities');
         } catch (err) {

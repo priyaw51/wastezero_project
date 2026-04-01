@@ -6,6 +6,7 @@ import MapPicker from "../components/MapPicker";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { FaMapMarkerAlt, FaKeyboard } from "react-icons/fa";
+import { forwardGeocode } from "../services/geocodingService";
 
 const Profile = () => {
     const { user, setUser } = useAuth();
@@ -15,6 +16,7 @@ const Profile = () => {
     const [locationMode, setLocationMode] = useState("manual");
     const [skillInput, setSkillInput] = useState("");
     const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
+    const [isGeocoding, setIsGeocoding] = useState(false);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -96,14 +98,30 @@ const Profile = () => {
         e.preventDefault();
         setSaveStatus(null);
         try {
-            const token = localStorage.getItem("token");
             if (!user || !user._id) return;
+
+            let finalLocation = { ...formData.location };
+
+            // FORWARD GEOCODING: If address is manual and coordinates are empty
+            if (locationMode === "manual" && (finalLocation.coordinates[0] === 0) && formData.address) {
+                setIsGeocoding(true);
+                try {
+                    const coords = await forwardGeocode(formData.address);
+                    if (coords) {
+                        finalLocation.coordinates = [parseFloat(coords.lon), parseFloat(coords.lat)];
+                    }
+                } catch (error) {
+                    console.error("Geocoding failed during profile save:", error);
+                } finally {
+                    setIsGeocoding(false);
+                }
+            }
 
             const updateData = {
                 bio: formData.bio,
                 address: formData.address,
                 skills: formData.skills,
-                location: formData.location,
+                location: finalLocation,
             };
 
             const response = await api.put(

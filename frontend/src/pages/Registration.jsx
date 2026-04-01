@@ -6,6 +6,8 @@ import { useAuth } from "../context/AuthContext";
 import AuthLayout from "../components/AuthLayout";
 import AuthService from "../services/authService";
 
+import { forwardGeocode } from "../services/geocodingService";
+
 function Register() {
   const navigate = useNavigate();
   const { register, verifyOtp } = useAuth();
@@ -28,6 +30,7 @@ function Register() {
   const [locationMode, setLocationMode] = useState("manual");
   const [isAdminVerified, setIsAdminVerified] = useState(false);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
 
   const handleChange = (e) => {
     if (e.target.name === 'role') {
@@ -104,15 +107,31 @@ function Register() {
         return;
       }
 
+      let finalLon = parseFloat(formData.longitude) || 0;
+      let finalLat = parseFloat(formData.latitude) || 0;
+
+      // FORWARD GEOCODING: If address is manual and coordinates are empty
+      if (locationMode === "manual" && (finalLat === 0 || finalLon === 0) && formData.address) {
+        setIsGeocoding(true);
+        try {
+          const coords = await forwardGeocode(formData.address);
+          if (coords) {
+            finalLat = parseFloat(coords.lat);
+            finalLon = parseFloat(coords.lon);
+          }
+        } catch (error) {
+          console.error("Geocoding failed during submit:", error);
+        } finally {
+          setIsGeocoding(false);
+        }
+      }
+
       const submissionData = {
         ...formData,
         skills: formData.skills.split(",").map((s) => s.trim()).filter(Boolean),
         location: {
           type: "Point",
-          coordinates: [
-            parseFloat(formData.longitude) || 0,
-            parseFloat(formData.latitude) || 0,
-          ],
+          coordinates: [finalLon, finalLat],
         },
       };
       delete submissionData.latitude;
