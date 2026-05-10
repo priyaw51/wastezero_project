@@ -1,14 +1,16 @@
 // load environment variables
 require('dotenv').config();
 
-const db = require('./config/db');
+// const db = require('./config/db');
+const connectDB = require("./config/db");
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const { initSocket } = require('./socket/index');
 
 async function start() {
-  await db.connect();
+  // await db.connect();
+  await connectDB();
 
   const app = express();
   const port = process.env.PORT || 3000;
